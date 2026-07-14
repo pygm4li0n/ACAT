@@ -24,6 +24,7 @@
             --shadow-front: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 80px rgba(200, 58, 70, 0.3);
             --radius-xl: 28px;
             --transition-bounce: 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
+            --grid-max-w: min(520px, 86vmin);
         }
 
         * {
@@ -43,7 +44,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* background layers */
         .bg-layer {
             position: fixed;
             inset: 0;
@@ -114,7 +114,6 @@
             pointer-events: none;
         }
 
-        /* screens */
         .screen {
             display: none;
             width: 100%;
@@ -132,7 +131,6 @@
             display: flex;
         }
 
-        /* global logo (top-left) */
         .global-logo {
             position: fixed;
             top: 12px;
@@ -146,8 +144,6 @@
             transition: opacity 0.35s ease, transform 0.3s ease, filter 0.3s ease;
             background: none;
             border: none;
-            loading: eager;
-            fetchpriority: high;
             opacity: 1;
             pointer-events: auto;
         }
@@ -161,7 +157,6 @@
             filter: drop-shadow(0 10px 24px rgba(199, 58, 70, 0.55));
         }
 
-        /* HUB */
         .hub-wrapper {
             display: flex;
             flex-direction: column;
@@ -341,7 +336,6 @@
             border-radius: 16px;
             transition: transform 0.5s;
             filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.4));
-            loading: lazy;
         }
         .card-link:hover .card-graphic-wrap img {
             transform: scale(1.03);
@@ -396,7 +390,6 @@
             position: relative;
         }
 
-        /* Stats card */
         #statsCard .card {
             justify-content: flex-start;
         }
@@ -571,18 +564,28 @@
         }
 
         /* ===== GAME SCREEN ===== */
+        #gameScreen {
+            justify-content: flex-start;
+            align-items: center;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+        #gameScreen.active {
+            display: flex;
+        }
         .game-wrapper {
             width: 100%;
-            height: 100%;
             max-width: 620px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             gap: clamp(3px, 0.8vh, 8px);
-            padding: clamp(6px, 1.2vh, 12px) 1rem clamp(6px, 1.2vh, 12px);
-            flex: 1;
-            overflow: hidden;
+            padding: clamp(6px, 1.2vh, 12px) 1rem clamp(16px, 3vh, 24px) 1rem;
+            flex: 0 0 auto;
+            min-height: auto;
+            overflow: visible;
         }
         .game-header {
             width: 100%;
@@ -596,12 +599,10 @@
             width: 100%;
             max-width: 560px;
             height: auto;
-            max-height: 24vh;
+            max-height: 20vh;
             border-radius: 12px;
             object-fit: contain;
             filter: drop-shadow(0 6px 22px rgba(0, 0, 0, 0.55));
-            loading: eager;
-            fetchpriority: high;
             flex-shrink: 0;
             display: block;
             background: transparent;
@@ -626,6 +627,7 @@
             gap: 6px;
             margin: 1px 0;
             flex-shrink: 0;
+            flex-wrap: wrap;
         }
         .info-item {
             background: rgba(22, 10, 14, 0.6);
@@ -648,6 +650,11 @@
             font-weight: 700;
             color: #fff;
         }
+        .info-item.top-scorer-highlight {
+            border-color: var(--gold-accent);
+            box-shadow: 0 0 16px rgba(196, 154, 92, 0.5);
+            background: rgba(30, 15, 10, 0.7);
+        }
 
         .grid-frame {
             background: rgba(22, 10, 14, 0.5);
@@ -657,14 +664,14 @@
             border: 1px solid rgba(255, 255, 255, 0.14);
             box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
             width: 100%;
-            max-width: min(540px, 88vmin);
-            flex: 1 1 auto;
-            min-height: 0;
+            max-width: var(--grid-max-w);
+            aspect-ratio: 1 / 1;
+            flex: 0 0 auto;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            aspect-ratio: 4 / 3;
-            max-height: 58vh;
+            min-height: 0;
+            position: relative;
         }
         .card-grid {
             display: grid;
@@ -673,13 +680,15 @@
             gap: clamp(3px, 1.5vw, 8px);
             width: 100%;
             height: 100%;
+            align-content: center;
+            justify-content: center;
         }
 
         .round-tracker {
             display: flex;
             justify-content: space-between;
             width: 100%;
-            max-width: min(540px, 88vmin);
+            max-width: var(--grid-max-w);
             margin: 2px auto 0;
             gap: 4px;
             flex-shrink: 0;
@@ -736,6 +745,8 @@
             place-self: center;
             width: 100%;
             height: 100%;
+            max-width: 100%;
+            max-height: 100%;
         }
         .card-inner {
             position: relative;
@@ -822,6 +833,239 @@
             }
         }
 
+        /* ===== TOP 10 BUTTON ===== */
+        .top10-toggle-btn {
+            font-family: 'Fredoka One', cursive;
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 28px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            background: rgba(199, 58, 70, 0.25);
+            border: 1.5px solid var(--apple-red-soft);
+            color: #fff;
+            flex-shrink: 0;
+            transition: 0.3s;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.05em;
+        }
+        .top10-toggle-btn:hover {
+            background: rgba(199, 58, 70, 0.45);
+            box-shadow: 0 0 20px rgba(199, 58, 70, 0.5);
+        }
+        .top10-toggle-btn.active-leader {
+            background: var(--apple-red-muted);
+            box-shadow: 0 0 24px rgba(199, 58, 70, 0.6);
+        }
+
+        /* ===== LEADERBOARD PANEL (Apple Red Theme) ===== */
+        .leaderboard-panel {
+            width: 100%;
+            max-width: var(--grid-max-w);
+            background: rgba(18, 8, 11, 0.92);
+            backdrop-filter: blur(14px);
+            border-radius: 18px;
+            border: 1.5px solid rgba(199, 58, 70, 0.4);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), 0 0 40px rgba(199, 58, 70, 0.25);
+            overflow: hidden;
+            flex-shrink: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.3, 0.64, 1);
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+            pointer-events: none;
+        }
+        .leaderboard-panel.open {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 4px;
+            pointer-events: auto;
+        }
+        .leaderboard-header {
+            padding: 0.6rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(199, 58, 70, 0.35);
+            background: linear-gradient(180deg, rgba(199, 58, 70, 0.2), transparent);
+        }
+        .leaderboard-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.06em;
+            text-shadow: 0 0 14px rgba(255, 255, 255, 0.4);
+        }
+        .leaderboard-list {
+            list-style: none;
+            padding: 0.4rem 0.6rem;
+            max-height: 280px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .leaderboard-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.6rem;
+            border-radius: 12px;
+            margin-bottom: 3px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: 0.3s;
+            font-size: 0.8rem;
+            color: #fff;
+        }
+        .leaderboard-list li.top-1 {
+            background: rgba(196, 154, 92, 0.2);
+            border-color: rgba(196, 154, 92, 0.6);
+            box-shadow: 0 0 14px rgba(196, 154, 92, 0.3);
+        }
+        .leaderboard-list li.top-2 {
+            background: rgba(180, 180, 190, 0.16);
+            border-color: rgba(180, 180, 190, 0.45);
+        }
+        .leaderboard-list li.top-3 {
+            background: rgba(160, 100, 60, 0.16);
+            border-color: rgba(160, 100, 60, 0.45);
+        }
+        .leader-rank {
+            font-weight: 700;
+            font-size: 0.9rem;
+            min-width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .leader-rank.r1 {
+            color: #f5c842;
+            font-size: 1.1rem;
+        }
+        .leader-rank.r2 {
+            color: #c0c0c0;
+            font-size: 1rem;
+        }
+        .leader-rank.r3 {
+            color: #cd7f32;
+            font-size: 0.95rem;
+        }
+        .leader-name {
+            flex: 1;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-primary);
+        }
+        .leader-score {
+            font-weight: 700;
+            color: var(--apple-red-soft);
+            text-shadow: 0 0 8px rgba(199, 58, 70, 0.5);
+            flex-shrink: 0;
+        }
+        .leaderboard-empty,
+        .leaderboard-error {
+            text-align: center;
+            padding: 1.2rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* ===== NAME INPUT MODAL ===== */
+        .name-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 60;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .name-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .name-modal {
+            background: rgba(22, 10, 14, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem 1.2rem;
+            border: 2px solid var(--apple-red-soft);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 60px rgba(199, 58, 70, 0.4);
+            text-align: center;
+            width: 90%;
+            max-width: 380px;
+            z-index: 61;
+        }
+        .name-modal h3 {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 0.3rem;
+            text-shadow: 0 0 18px rgba(255, 255, 255, 0.5);
+        }
+        .name-modal .final-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold-accent);
+            text-shadow: 0 0 20px rgba(196, 154, 92, 0.6);
+            margin-bottom: 0.8rem;
+        }
+        .name-modal input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border-radius: 28px;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            margin-bottom: 0.8rem;
+            transition: 0.3s;
+        }
+        .name-modal input:focus {
+            border-color: var(--apple-red-soft);
+            box-shadow: 0 0 20px rgba(199, 58, 70, 0.4);
+        }
+        .name-modal input::placeholder {
+            color: rgba(255, 255, 255, 0.35);
+        }
+        .name-modal .modal-btn-row {
+            display: flex;
+            gap: 0.6rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .name-modal .modal-btn {
+            font-family: 'Fredoka One', cursive;
+            padding: 0.5rem 1.4rem;
+            border-radius: 28px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
+            letter-spacing: 0.03em;
+        }
+        .modal-btn.save-btn {
+            background: var(--apple-red-muted);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(184, 48, 60, 0.5);
+        }
+        .modal-btn.save-btn:hover {
+            background: var(--apple-red-soft);
+        }
+        .modal-btn.skip-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .modal-btn.skip-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
         .btn-back {
             font-family: 'Fredoka One', cursive;
             padding: 6px 20px;
@@ -843,15 +1087,20 @@
             color: #fff;
         }
 
-        /* ===== RESPONSIVE ===== */
-
-        /* Tablet & small desktop: stack cards vertically, allow hub scroll */
+        /* ===== RESPONSIVE (same as before, but with leaderboard adjustments) ===== */
         @media (max-width: 900px) {
             #hubScreen {
                 overflow-y: auto;
                 overflow-x: hidden;
                 justify-content: flex-start;
                 -webkit-overflow-scrolling: touch;
+            }
+            #gameScreen {
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+                justify-content: flex-start;
+                align-items: center;
             }
             .hub-wrapper {
                 justify-content: flex-start;
@@ -881,11 +1130,12 @@
             .hub-title {
                 font-size: 1.8rem;
             }
+            :root {
+                --grid-max-w: min(440px, 82vmin);
+            }
             .grid-frame {
                 padding: 6px;
-                max-width: min(480px, 84vmin);
-                max-height: 50vh;
-                aspect-ratio: 4 / 3;
+                border-radius: 18px;
             }
             .card-grid {
                 gap: 5px;
@@ -901,22 +1151,39 @@
                 font-size: 0.85rem;
             }
             .game-banner-img {
-                max-height: 16vh;
+                max-height: 14vh;
             }
             .game-wrapper {
-                justify-content: flex-start;
                 gap: clamp(2px, 0.6vh, 6px);
-                padding: clamp(4px, 1vh, 8px) 0.8rem clamp(4px, 1vh, 8px);
+                padding: clamp(4px, 1vh, 8px) 0.8rem clamp(16px, 3vh, 20px) 0.8rem;
+                flex: 0 0 auto;
+                height: auto;
+                justify-content: flex-start;
+            }
+            .win-message {
+                font-size: clamp(1.2rem, 3.8vw, 1.8rem);
+            }
+            .leaderboard-panel.open {
+                max-height: 400px;
+            }
+            .leaderboard-list {
+                max-height: 200px;
             }
         }
 
-        /* Phone */
         @media (max-width: 480px) {
             #hubScreen {
                 overflow-y: auto;
                 overflow-x: hidden;
                 justify-content: flex-start;
                 -webkit-overflow-scrolling: touch;
+            }
+            #gameScreen {
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+                justify-content: flex-start;
+                align-items: center;
             }
             .global-logo {
                 width: 44px;
@@ -964,11 +1231,11 @@
                 padding: 0.4rem 1rem;
                 font-size: 0.75rem;
             }
+            :root {
+                --grid-max-w: min(340px, 80vmin);
+            }
             .grid-frame {
                 padding: 4px;
-                max-width: min(380px, 82vmin);
-                max-height: 44vh;
-                aspect-ratio: 4 / 3;
                 border-radius: 16px;
             }
             .card-grid {
@@ -985,7 +1252,7 @@
                 font-size: 0.7rem;
             }
             .game-banner-img {
-                max-height: 12vh;
+                max-height: 10vh;
             }
             .match-instruction {
                 font-size: 0.7rem;
@@ -1021,23 +1288,74 @@
                 height: 10px;
             }
             .game-wrapper {
-                justify-content: flex-start;
                 gap: clamp(2px, 0.5vh, 4px);
-                padding: clamp(3px, 0.7vh, 5px) 0.5rem clamp(3px, 0.7vh, 5px);
+                padding: clamp(3px, 0.7vh, 5px) 0.5rem clamp(14px, 2.5vh, 18px) 0.5rem;
+                flex: 0 0 auto;
+                height: auto;
+                justify-content: flex-start;
+                max-width: 100%;
             }
             .win-message {
                 font-size: clamp(1rem, 3.5vw, 1.6rem);
             }
+            .info-row {
+                max-width: 100%;
+                gap: 4px;
+            }
+            .info-item {
+                padding: 2px 7px;
+                font-size: 0.55rem;
+            }
+            .info-item .emoji-big {
+                font-size: 0.65rem;
+            }
+            .top10-toggle-btn {
+                padding: 4px 12px;
+                font-size: 0.65rem;
+            }
+            .leaderboard-panel.open {
+                max-height: 340px;
+            }
+            .leaderboard-list {
+                max-height: 170px;
+            }
+            .leaderboard-header h3 {
+                font-size: 0.85rem;
+            }
+            .leaderboard-list li {
+                font-size: 0.7rem;
+                padding: 0.35rem 0.5rem;
+            }
+            .name-modal {
+                padding: 1.2rem 0.9rem;
+            }
+            .name-modal h3 {
+                font-size: 1rem;
+            }
+            .name-modal .final-score {
+                font-size: 1.5rem;
+            }
+            .name-modal input {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.8rem;
+            }
         }
 
-        /* Short viewport (landscape phones / small desktops) */
         @media (max-height: 700px) {
+            #gameScreen {
+                justify-content: flex-start;
+                align-items: center;
+                overflow-y: auto;
+            }
             .game-wrapper {
                 gap: clamp(1px, 0.5vh, 4px);
-                padding: clamp(2px, 0.6vh, 5px) 0.8rem;
+                padding: clamp(2px, 0.6vh, 5px) 0.8rem clamp(10px, 2vh, 14px) 0.8rem;
+                flex: 0 0 auto;
+                height: auto;
+                justify-content: flex-start;
             }
             .game-banner-img {
-                max-height: 11vh;
+                max-height: 9vh;
             }
             .match-instruction {
                 font-size: clamp(0.65rem, 2vw, 0.95rem);
@@ -1046,11 +1364,12 @@
                 padding: 2px 10px;
                 font-size: 0.65rem;
             }
+            :root {
+                --grid-max-w: min(420px, 72vmin);
+            }
             .grid-frame {
                 padding: 4px;
-                max-width: min(460px, 76vmin);
-                max-height: 40vh;
-                aspect-ratio: 4 / 3;
+                border-radius: 16px;
             }
             .card-grid {
                 gap: 3px;
@@ -1067,17 +1386,29 @@
             .card-back::after {
                 font-size: clamp(1rem, 3.5vw, 1.5rem);
             }
+            .leaderboard-panel.open {
+                max-height: 300px;
+            }
+            .leaderboard-list {
+                max-height: 140px;
+            }
         }
 
         @media (max-height: 500px) {
+            #gameScreen {
+                justify-content: flex-start;
+                align-items: center;
+                overflow-y: auto;
+            }
             .game-banner-img {
-                max-height: 8vh;
+                max-height: 7vh;
+            }
+            :root {
+                --grid-max-w: min(300px, 60vmin);
             }
             .grid-frame {
-                max-height: 32vh;
                 padding: 3px;
                 border-radius: 14px;
-                aspect-ratio: 4 / 3;
             }
             .card-grid {
                 gap: 2px;
@@ -1112,16 +1443,32 @@
             }
             .game-wrapper {
                 gap: clamp(1px, 0.4vh, 2px);
-                padding: clamp(1px, 0.5vh, 3px) 0.5rem;
+                padding: clamp(1px, 0.5vh, 3px) 0.5rem clamp(8px, 1.5vh, 10px) 0.5rem;
+                flex: 0 0 auto;
+                height: auto;
+                justify-content: flex-start;
             }
             .win-message {
                 font-size: clamp(0.8rem, 3vw, 1.2rem);
+            }
+            .leaderboard-panel.open {
+                max-height: 220px;
+            }
+            .leaderboard-list {
+                max-height: 100px;
+            }
+            .leaderboard-header h3 {
+                font-size: 0.7rem;
+                padding: 0.3rem;
+            }
+            .top10-toggle-btn {
+                padding: 3px 10px;
+                font-size: 0.55rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- background layers -->
     <div class="bg-layer bg-base"></div>
     <div class="bg-layer bg-texture"></div>
     <div class="bg-layer bg-vignette"></div>
@@ -1132,10 +1479,21 @@
     </div>
     <canvas id="petalCanvas"></canvas>
 
-    <!-- GLOBAL LOGO (top-left) -->
     <img class="global-logo" src="https://i.postimg.cc/3xByZMxY/gato1.png" alt="Logo" loading="eager" fetchpriority="high" id="globalLogo" />
 
-    <!-- HUB SCREEN -->
+    <!-- NAME INPUT MODAL -->
+    <div class="name-modal-overlay" id="nameModalOverlay">
+        <div class="name-modal">
+            <h3>🏆 New High Score! 🏆</h3>
+            <div class="final-score" id="finalScoreDisplay">0</div>
+            <input type="text" id="playerNameInput" placeholder="Enter your name..." maxlength="16" autocomplete="off" />
+            <div class="modal-btn-row">
+                <button class="modal-btn save-btn" id="saveScoreBtn">💾 Save Score</button>
+                <button class="modal-btn skip-btn" id="skipScoreBtn">Skip</button>
+            </div>
+        </div>
+    </div>
+
     <div id="hubScreen" class="screen active">
         <div class="hub-wrapper">
             <div class="title-container">
@@ -1148,7 +1506,6 @@
                 </div>
             </div>
             <div class="cards-stage">
-                <!-- Game Card -->
                 <div class="card-link" id="gameCard">
                     <div class="card">
                         <div class="card-graphic-wrap">
@@ -1161,7 +1518,6 @@
                         <button class="card-btn play-btn" id="playBtn">▶ Play Now</button>
                     </div>
                 </div>
-                <!-- Stats Card -->
                 <div class="card-link" id="statsCard">
                     <div class="card">
                         <h3 class="card-title">🍏 TOKEN STATS</h3>
@@ -1191,7 +1547,6 @@
                         <a class="card-btn chart-btn" href="https://dexscreener.com/solana/5ahH4QUNr3d6YmqoKnuJYqKbATAHDBaYRSk8Fa5f8sdY" target="_blank" rel="noopener">📈 DexScreener</a>
                     </div>
                 </div>
-                <!-- GIF Card -->
                 <div class="card-link" id="gifCard">
                     <div class="card">
                         <div class="card-graphic-wrap">
@@ -1208,7 +1563,6 @@
         </div>
     </div>
 
-    <!-- GAME SCREEN -->
     <div id="gameScreen" class="screen">
         <div class="game-wrapper">
             <div class="game-header">
@@ -1217,7 +1571,9 @@
             </div>
             <div class="info-row">
                 <div class="info-item"><span class="emoji-big">🍎</span><span class="value" id="roundDisplay">1 / 10</span></div>
-                <div class="info-item"><span class="emoji-big">👑</span><span class="value" id="topScorerDisplay">---</span></div>
+                <div class="info-item top-scorer-highlight" id="topScorerInfo">
+                    <span class="emoji-big">👑</span><span class="value" id="topScorerDisplay">---</span>
+                </div>
                 <div class="info-item"><span class="emoji-big">⭐</span><span class="value" id="scoreDisplay">0</span></div>
             </div>
             <div class="grid-frame">
@@ -1225,13 +1581,30 @@
                 <div class="win-message" id="winMessage"></div>
             </div>
             <div class="round-tracker" id="roundTracker"></div>
+            <button class="top10-toggle-btn" id="top10ToggleBtn">TOP 10 🏆</button>
+            <div class="leaderboard-panel" id="leaderboardPanel">
+                <div class="leaderboard-header">
+                    <h3>🏆 TOP 10 · APPLE CAT RAIDERS</h3>
+                </div>
+                <ul class="leaderboard-list" id="leaderboardList">
+                    <li class="leaderboard-empty">Loading scores …</li>
+                </ul>
+            </div>
             <button class="btn-back" id="backToHubBtn">← Back to Hub</button>
         </div>
     </div>
 
+    <!-- Supabase & Game Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         (function() {
-            // ===== PETALS =====
+            // ─── SUPABASE CONFIG (your keys) ─────────────────
+            const SUPABASE_URL = 'https://faoziaawqxettcazbryq.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_kmZm7clazKO4SRyMC9oD6g_Zaz1AlDi';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            const TOP_LIMIT = 10;
+
+            // ─── PETALS (unchanged) ──────────────────────────
             const petalCanvas = document.getElementById('petalCanvas');
             const pCtx = petalCanvas.getContext('2d');
             let pW, pH, petals = [];
@@ -1287,7 +1660,7 @@
             initPetals();
             drawPetals();
 
-            // ===== DOM REFS =====
+            // ─── DOM refs ────────────────────────────────────
             const globalLogo = document.getElementById('globalLogo');
             const hubScreen = document.getElementById('hubScreen');
             const gameScreen = document.getElementById('gameScreen');
@@ -1296,17 +1669,17 @@
             const copyFeedback = document.getElementById('copyFeedback');
             const caText = '66R44YgXe6ZbxRmDiBqkQ5t6yHu72isuE8BbS6u684fu';
 
-            // ===== LOGO CLICK =====
             globalLogo.addEventListener('click', () => {
                 if (gameScreen.classList.contains('active')) {
-                    // Go back to hub
                     gameScreen.classList.remove('active');
                     hubScreen.classList.add('active');
                     globalLogo.classList.remove('logo-hidden');
+                    hubScreen.scrollTop = 0;
+                    gameScreen.scrollTop = 0;
+                    closeLeaderboard();
                 }
             });
 
-            // ===== CA COPY =====
             caLine.addEventListener('click', () => {
                 navigator.clipboard.writeText(caText).then(() => {
                     copyIcon.style.display = 'none';
@@ -1318,7 +1691,7 @@
                 });
             });
 
-            // ===== TOKEN STATS =====
+            // ─── TOKEN STATS (unchanged) ────────────────────
             const PAIR_ID = '5ahH4QUNr3d6YmqoKnuJYqKbATAHDBaYRSk8Fa5f8sdY';
             const API_URL = `https://api.dexscreener.com/latest/dex/pairs/solana/${PAIR_ID}`;
             const MCAP_GOAL = 100000;
@@ -1356,7 +1729,7 @@
             fetchStats();
             setInterval(fetchStats, 8000);
 
-            // ===== DOWNLOAD GIF =====
+            // ─── DOWNLOAD GIF (unchanged) ────────────────────
             document.getElementById('downloadGifBtn').addEventListener('click', () => {
                 const link = document.createElement('a');
                 link.href = 'https://i.postimg.cc/sfk3Qnyp/ezgif-com-gif-maker-(10).gif';
@@ -1366,25 +1739,230 @@
                 document.body.removeChild(link);
             });
 
-            // ===== SCREEN SWITCHING =====
+            // ─── SCREEN SWITCHING ────────────────────────────
             document.getElementById('playBtn').addEventListener('click', (e) => {
                 e.preventDefault();
                 hubScreen.classList.remove('active');
                 gameScreen.classList.add('active');
                 globalLogo.classList.add('logo-hidden');
+                closeLeaderboard();
                 initGame();
-                // Scroll hub back to top for next visit
                 hubScreen.scrollTop = 0;
+                gameScreen.scrollTop = 0;
             });
 
             document.getElementById('backToHubBtn').addEventListener('click', () => {
                 gameScreen.classList.remove('active');
                 hubScreen.classList.add('active');
                 globalLogo.classList.remove('logo-hidden');
+                closeLeaderboard();
                 hubScreen.scrollTop = 0;
+                gameScreen.scrollTop = 0;
             });
 
-            // ===== GAME LOGIC =====
+            // ─── SUPABASE LEADERBOARD ────────────────────────
+            const leaderboardPanel = document.getElementById('leaderboardPanel');
+            const leaderboardList = document.getElementById('leaderboardList');
+            const top10ToggleBtn = document.getElementById('top10ToggleBtn');
+            const topScorerDisplay = document.getElementById('topScorerDisplay');
+            const topScorerInfo = document.getElementById('topScorerInfo');
+            const nameModalOverlay = document.getElementById('nameModalOverlay');
+            const playerNameInput = document.getElementById('playerNameInput');
+            const finalScoreDisplay = document.getElementById('finalScoreDisplay');
+            const saveScoreBtn = document.getElementById('saveScoreBtn');
+            const skipScoreBtn = document.getElementById('skipScoreBtn');
+
+            let leaderboardOpen = false;
+            let cachedTopScores = [];   // used to check eligibility quickly
+            let pendingSaveScore = 0;
+
+            // fetch top scores from Supabase
+            async function fetchTopScores(limit = TOP_LIMIT) {
+                const { data, error } = await supabase
+                    .from('scores')
+                    .select('*')
+                    .order('score', { ascending: false })
+                    .limit(limit);
+                if (error) throw error;
+                return data || [];
+            }
+
+            // insert a new score
+            async function insertScore(name, score) {
+                const { error } = await supabase
+                    .from('scores')
+                    .insert([{ name: name.trim().slice(0, 60) || 'Anonymous 🐱', score: Math.round(score) }]);
+                if (error) throw error;
+            }
+
+            // render the leaderboard panel
+            function renderLeaderboard(scores) {
+                leaderboardList.innerHTML = '';
+                if (!scores || scores.length === 0) {
+                    const li = document.createElement('li');
+                    li.className = 'leaderboard-empty';
+                    li.textContent = 'No scores yet — be the first! 🍎';
+                    leaderboardList.appendChild(li);
+                } else {
+                    scores.forEach((entry, i) => {
+                        const li = document.createElement('li');
+                        if (i === 0) li.classList.add('top-1');
+                        if (i === 1) li.classList.add('top-2');
+                        if (i === 2) li.classList.add('top-3');
+                        const rankSpan = document.createElement('span');
+                        rankSpan.className = 'leader-rank';
+                        if (i === 0) rankSpan.classList.add('r1');
+                        if (i === 1) rankSpan.classList.add('r2');
+                        if (i === 2) rankSpan.classList.add('r3');
+                        rankSpan.textContent = `#${i + 1}`;
+                        const nameSpan = document.createElement('span');
+                        nameSpan.className = 'leader-name';
+                        nameSpan.textContent = entry.name || 'Anonymous';
+                        const scoreSpan = document.createElement('span');
+                        scoreSpan.className = 'leader-score';
+                        scoreSpan.textContent = Number(entry.score).toLocaleString();
+                        li.appendChild(rankSpan);
+                        li.appendChild(nameSpan);
+                        li.appendChild(scoreSpan);
+                        leaderboardList.appendChild(li);
+                    });
+                }
+                updateTopScorerDisplay(scores);
+            }
+
+            function renderLoading() {
+                leaderboardList.innerHTML = '<li class="leaderboard-empty">⏳ Loading scores …</li>';
+            }
+
+            function renderError(msg) {
+                leaderboardList.innerHTML = `<li class="leaderboard-error">⚠️ ${msg}</li>`;
+            }
+
+            async function refreshLeaderboard() {
+                renderLoading();
+                try {
+                    const scores = await fetchTopScores();
+                    cachedTopScores = scores;
+                    renderLeaderboard(scores);
+                } catch (err) {
+                    console.error('Leaderboard fetch error:', err);
+                    renderError('Could not load scores. Check connection.');
+                }
+            }
+
+            function updateTopScorerDisplay(scores) {
+                if (scores && scores.length > 0) {
+                    const top = scores[0];
+                    topScorerDisplay.textContent = `${top.name} (${Number(top.score).toLocaleString()})`;
+                    topScorerInfo.classList.add('top-scorer-highlight');
+                } else {
+                    topScorerDisplay.textContent = '---';
+                    topScorerInfo.classList.remove('top-scorer-highlight');
+                }
+            }
+
+            function openLeaderboard() {
+                leaderboardOpen = true;
+                leaderboardPanel.classList.add('open');
+                top10ToggleBtn.classList.add('active-leader');
+                top10ToggleBtn.textContent = 'TOP 10 ▲';
+                refreshLeaderboard();
+            }
+
+            function closeLeaderboard() {
+                leaderboardOpen = false;
+                leaderboardPanel.classList.remove('open');
+                top10ToggleBtn.classList.remove('active-leader');
+                top10ToggleBtn.textContent = 'TOP 10 🏆';
+            }
+
+            function toggleLeaderboard() {
+                if (leaderboardOpen) {
+                    closeLeaderboard();
+                } else {
+                    openLeaderboard();
+                }
+            }
+
+            top10ToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleLeaderboard();
+            });
+
+            // ─── NAME MODAL ──────────────────────────────────
+            function showNameModal(score) {
+                pendingSaveScore = score;
+                finalScoreDisplay.textContent = score.toLocaleString() + ' pts';
+                playerNameInput.value = '';
+                nameModalOverlay.classList.add('active');
+                setTimeout(() => playerNameInput.focus(), 300);
+            }
+
+            function hideNameModal() {
+                nameModalOverlay.classList.remove('active');
+                pendingSaveScore = 0;
+            }
+
+            async function handleSaveScore() {
+                const name = playerNameInput.value.trim() || 'Anonymous 🐱';
+                if (pendingSaveScore > 0) {
+                    try {
+                        saveScoreBtn.disabled = true;
+                        saveScoreBtn.innerHTML = '⏳ Saving…';
+                        await insertScore(name, pendingSaveScore);
+                        hideNameModal();
+                        await refreshLeaderboard();
+                        if (!leaderboardOpen) openLeaderboard();
+                    } catch (err) {
+                        alert('Failed to save score: ' + err.message);
+                    } finally {
+                        saveScoreBtn.disabled = false;
+                        saveScoreBtn.innerHTML = '💾 Save Score';
+                    }
+                } else {
+                    hideNameModal();
+                }
+                resetGameAfterSave();
+            }
+
+            function handleSkipScore() {
+                hideNameModal();
+                resetGameAfterSave();
+            }
+
+            function resetGameAfterSave() {
+                round = 1;
+                totalScore = 0;
+                goldStreak = 0;
+                roundResults = [];
+                gameOver = false;
+                initGrid();
+                renderGrid();
+                updateHUD();
+                updateTracker();
+                gameScreen.scrollTop = 0;
+            }
+
+            saveScoreBtn.addEventListener('click', handleSaveScore);
+            skipScoreBtn.addEventListener('click', handleSkipScore);
+
+            playerNameInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handleSaveScore();
+            });
+
+            nameModalOverlay.addEventListener('click', (e) => {
+                if (e.target === nameModalOverlay) handleSkipScore();
+            });
+
+            // Real-time subscription to update leaderboard instantly
+            supabase
+                .channel('scores_channel')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'scores' }, () => {
+                    refreshLeaderboard();
+                })
+                .subscribe();
+
+            // ─── GAME LOGIC (unchanged) ──────────────────────
             const IMAGES = {
                 gold: 'https://i.postimg.cc/crXr135V/golden3.png',
                 green: 'https://i.postimg.cc/dLqhK64s/good1.png',
@@ -1393,12 +1971,10 @@
             const POINTS = { gold: 1250, green: 750, red: 450 },
                 TYPE_COLOR = { gold: 'gold', green: 'green', red: 'red' },
                 TOTAL_ROUNDS = 10;
-            let grid, round, totalScore, roundActive, gameOver, roundResults, revealedCount, isProcessing,
-                goldStreak;
+            let grid, round, totalScore, roundActive, gameOver, roundResults, revealedCount, isProcessing, goldStreak;
             const cardGrid = document.getElementById('cardGrid'),
                 roundDisplay = document.getElementById('roundDisplay'),
                 scoreDisplay = document.getElementById('scoreDisplay'),
-                topScorerDisplay = document.getElementById('topScorerDisplay'),
                 roundTracker = document.getElementById('roundTracker'),
                 winMessage = document.getElementById('winMessage');
 
@@ -1456,8 +2032,7 @@
                 if (revealedCount[it.type] === 3) {
                     isProcessing = true;
                     roundActive = false;
-                    let pts = POINTS[it.type],
-                        bonus = 0;
+                    let pts = POINTS[it.type], bonus = 0;
                     if (it.type === 'gold') {
                         goldStreak++;
                         if (goldStreak >= 2) {
@@ -1480,8 +2055,7 @@
                     winMessage.className = `win-message show ${TYPE_COLOR[it.type]}`;
                     setTimeout(() => {
                         winMessage.classList.remove('show', 'red', 'green', 'gold');
-                        document.querySelectorAll('.match-card.glow').forEach(e => e.classList.remove(
-                            'glow', 'red', 'green', 'gold'));
+                        document.querySelectorAll('.match-card.glow').forEach(e => e.classList.remove('glow', 'red', 'green', 'gold'));
                         nextRound();
                     }, 1400);
                 } else if (grid.every(g => g.revealed)) {
@@ -1513,26 +2087,35 @@
             function endGame() {
                 gameOver = true;
                 roundActive = false;
-                winMessage.textContent = `🏆 ${totalScore.toLocaleString()} pts!`;
+                const finalScore = totalScore;
+                winMessage.textContent = `🏆 ${finalScore.toLocaleString()} pts!`;
                 winMessage.className = 'win-message show gold';
-                setTimeout(() => {
+                setTimeout(async () => {
                     winMessage.classList.remove('show', 'gold');
-                    round = 1;
-                    totalScore = 0;
-                    goldStreak = 0;
-                    roundResults = [];
-                    gameOver = false;
-                    initGrid();
-                    renderGrid();
-                    updateHUD();
-                    updateTracker();
+                    if (finalScore <= 0) {
+                        resetGameAfterSave();
+                        return;
+                    }
+                    try {
+                        const topScores = await fetchTopScores();
+                        cachedTopScores = topScores;
+                        const isHigh = topScores.length < TOP_LIMIT ||
+                            finalScore > (topScores[topScores.length - 1]?.score || 0);
+                        if (isHigh) {
+                            showNameModal(finalScore);
+                        } else {
+                            resetGameAfterSave();
+                        }
+                    } catch (err) {
+                        console.error('Error checking high score:', err);
+                        resetGameAfterSave();
+                    }
                 }, 1600);
             }
 
             function updateHUD() {
                 roundDisplay.textContent = `${Math.min(round,TOTAL_ROUNDS)} / ${TOTAL_ROUNDS}`;
                 scoreDisplay.textContent = totalScore;
-                topScorerDisplay.textContent = '---';
             }
 
             function updateTracker() {
@@ -1562,7 +2145,13 @@
                 renderGrid();
                 updateHUD();
                 updateTracker();
+                gameScreen.scrollTop = 0;
+                hideNameModal();
+                refreshLeaderboard(); // initial fetch
             }
+
+            // Initial fetch
+            refreshLeaderboard();
         })();
     </script>
 </body>
