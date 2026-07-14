@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>🍎🐱 APPLE CAT · Epic Hub</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+        :root {
+            --bg-deep: #0b0406;
+            --card-bg: rgba(18, 8, 11, 0.88);
+            --apple-red: #c73a46;
+            --apple-red-soft: #e0555f;
+            --apple-red-muted: #b8303c;
+            --leaf-green: #5a9e44;
+            --leaf-green-soft: #74b85a;
+            --gold-accent: #c49a5c;
+            --text-primary: #ffffff;
+            --text-secondary: #d6c6be;
+            --text-muted: #a8958c;
+            --border-subtle: rgba(199, 58, 70, 0.28);
+            --border-glow: rgba(255, 255, 255, 0.45);
+            --shadow-front: 0 20px 60px rgba(0,0,0,0.8), 0 0 80px rgba(200,58,70,0.3);
+            --radius-xl: 32px;
+            --transition-bounce: 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Fredoka One', 'Segoe UI', 'Helvetica Neue', cursive, sans-serif;
+            background: var(--bg-deep);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .bg-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .bg-base {
+            background: radial-gradient(ellipse at 30% 20%, rgba(199,58,70,0.2) 0%, transparent 55%),
+                        radial-gradient(ellipse at 70% 70%, rgba(90,158,68,0.1) 0%, transparent 50%),
+                        linear-gradient(180deg, #0a0305 0%, #14070b 50%, #0c0407 100%);
+        }
+        .bg-texture {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+            opacity: 0.5; mix-blend-mode: overlay;
+        }
+        .bg-vignette {
+            background: radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.8) 100%);
+            opacity: 0.9;
+        }
+
+        .ambient-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; filter: blur(100px); }
+        .orb { position: absolute; border-radius: 50%; transition: all 0.6s ease; }
+        .orb-red { width: 50vw; height: 50vw; max-width: 600px; max-height: 600px; background: var(--apple-red); top: -8%; left: -5%; opacity: 0.25; }
+        .orb-green { width: 45vw; height: 45vw; max-width: 500px; max-height: 500px; background: var(--leaf-green); bottom: -8%; right: -5%; opacity: 0.2; }
+        .orb-gold { width: 40vw; height: 40vw; max-width: 450px; max-height: 450px; background: var(--gold-accent); top: 45%; left: 50%; transform: translate(-50%,-50%); opacity: 0.15; }
+
+        #petalCanvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        .screen { display: none; width: 100%; height: 100vh; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2; }
+        .screen.active { display: flex; }
+
+        /* ── HUB ── */
+        .hub-wrapper {
+            display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+            width: 100%; height: 100vh; justify-content: center; padding: 1rem;
+        }
+        .hub-logo {
+            position: absolute; top: 20px; left: 30px; width: 156px; height: 156px;
+            object-fit: contain; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
+            z-index: 10; cursor: pointer; transition: 0.3s;
+            background: none; border: none;
+            loading: eager; fetchpriority: high;
+        }
+        .hub-logo:hover { transform: scale(1.05); filter: drop-shadow(0 12px 30px rgba(199,58,70,0.6)); }
+
+        .title-container {
+            width: 100%; max-width: 1350px; text-align: center; z-index: 5;
+            padding: 0 1rem; margin-bottom: 0.4rem; margin-top: -2rem;
+        }
+        .hub-title {
+            font-size: clamp(3.2rem, 8vw, 5rem); font-weight: 800; letter-spacing: -0.02em;
+            color: #fff; text-shadow: 0 4px 30px rgba(199,58,70,0.5);
+            margin-bottom: 0.2rem;
+        }
+        .hub-title .red-accent { color: var(--apple-red-soft); }
+        .hub-title .green-accent { color: var(--leaf-green-soft); }
+
+        .ca-line {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            font-family: 'Fredoka One', monospace;
+            font-size: 1.2rem; font-weight: 600; color: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.08);
+            padding: 0.5rem 1.8rem; border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.25);
+            cursor: pointer; transition: all 0.3s ease;
+            max-width: 100%; text-shadow: 0 0 12px rgba(255,255,255,0.4);
+        }
+        .ca-line:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.5); }
+        .ca-line .ca-prefix { font-size: 1.4rem; }
+        .ca-line .ca-text { word-break: break-all; }
+        .ca-line .copy-icon { font-size: 1.5rem; opacity: 0.8; }
+        .ca-line .copy-feedback { font-size: 1.2rem; display: none; }
+
+        .cards-stage {
+            display: flex; flex-direction: row; align-items: stretch; justify-content: center;
+            gap: 2rem; width: 100%; max-width: 1350px; height: 60vh; min-height: 480px;
+            padding: 0 1rem;
+        }
+
+        .card-link {
+            text-decoration: none; color: inherit; flex: 1; min-width: 260px; max-width: 420px;
+            display: flex; cursor: pointer; transition: all var(--transition-bounce);
+        }
+        .card-link:hover { transform: translateY(-8px); }
+        .card-link:active { transform: scale(0.97); }
+
+        .card {
+            background: var(--card-bg); border-radius: var(--radius-xl);
+            padding: 1.8rem 1.5rem 2rem; display: flex; flex-direction: column;
+            align-items: center; text-align: center; width: 100%;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.55);
+            border: 1.5px solid var(--border-subtle);
+            backdrop-filter: blur(12px); position: relative; overflow: hidden;
+            transition: all var(--transition-bounce);
+        }
+        .card:hover { box-shadow: var(--shadow-front); border-color: var(--border-glow); }
+        .card::before {
+            content: ''; position: absolute; top: 5%; left: 10%; width: 80%; height: 50%;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, transparent 70%);
+            pointer-events: none; z-index: 0; border-radius: 50%;
+        }
+        .card::after {
+            content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 4px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), var(--apple-red-soft), rgba(255,255,255,0.4), transparent);
+            border-radius: 0 0 50% 50%; z-index: 4; opacity: 0.6; transition: 0.5s;
+        }
+        .card:hover::after { opacity: 1; height: 5px; }
+
+        .card-graphic-wrap {
+            width: 100%; aspect-ratio: 1/1; margin-bottom: 1.2rem; border-radius: 20px;
+            background: rgba(0,0,0,0.35); border: 2px dashed rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; transition: all var(--transition-bounce);
+        }
+        .card-graphic-wrap img {
+            width: 100%; height: 100%; object-fit: cover; border-radius: 18px;
+            transition: transform 0.5s; filter: drop-shadow(0 0 10px rgba(0,0,0,0.4));
+            loading: lazy;
+        }
+        .card-link:hover .card-graphic-wrap img { transform: scale(1.03); }
+        .card-graphic-leaf {
+            position: absolute; pointer-events: none; background: var(--leaf-green);
+            border-radius: 0 70% 0 70%; opacity: 0.4; transition: all var(--transition-bounce);
+        }
+        .cg1 { top: -5px; right: -7px; width: 20px; height: 11px; transform: rotate(20deg); }
+        .cg2 { bottom: -5px; left: -7px; width: 16px; height: 9px; background: var(--leaf-green-soft); transform: rotate(-30deg); }
+        .card-link:hover .cg1 { opacity: 0.7; transform: rotate(30deg) scale(1.2); }
+        .card-link:hover .cg2 { opacity: 0.65; transform: rotate(-40deg) scale(1.2); }
+
+        .card-title { font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.4rem; }
+        .card-desc { font-size: 1rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 1.2rem; flex-grow: 1; }
+
+        /* Stats card */
+        .stats-vertical {
+            display: flex; flex-direction: column; gap: 0.8rem; width: 100%;
+            margin-bottom: 1rem; flex-grow: 1;
+        }
+        .stat-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.6rem 1.2rem; background: rgba(255,255,255,0.04);
+            border-radius: 14px; border: 1px solid rgba(255,255,255,0.08);
+        }
+        .stat-row .stat-label {
+            font-size: 1rem; color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .stat-row .stat-value {
+            font-size: 1.3rem; font-weight: 700; color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+        .stat-change { font-weight: 700; font-size: 1.3rem; }
+        .stat-change.positive { color: #5db847; }
+        .stat-change.negative { color: #ff4d6d; }
+
+        .mcap-bar-wrap { width: 100%; }
+        .mcap-bar-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-bottom: 0.2rem; }
+        .mcap-bar { width: 100%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); }
+        .mcap-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--apple-red-soft), var(--gold-accent)); border-radius: 20px; transition: width 0.5s ease; box-shadow: 0 0 15px var(--apple-red-soft); }
+
+        .card-btn {
+            display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.8rem 2.2rem;
+            border-radius: 40px; font-weight: 700; font-size: 1rem; letter-spacing: 0.02em;
+            transition: 0.3s; border: none; cursor: pointer; z-index: 2;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .play-btn { background: var(--apple-red-muted); color: #fff; box-shadow: 0 6px 24px rgba(184,48,60,0.5); }
+        .play-btn:hover { background: var(--apple-red-soft); transform: translateY(-2px); }
+        .download-btn { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.25); }
+        .download-btn:hover { background: rgba(255,255,255,0.15); }
+        .chart-btn { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.25); }
+        .chart-btn:hover { background: rgba(255,255,255,0.15); }
+
+        /* Game screen */
+        .game-wrapper {
+            width: 100%; max-width: 680px; padding: 0 20px 10px;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .game-header { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .game-logo-img {
+            width: 100%; max-width: 620px; border-radius: 16px; object-fit: cover;
+            filter: drop-shadow(0 8px 28px rgba(0,0,0,0.6)); margin-top: 20px;
+            loading: eager; fetchpriority: high;
+        }
+        .match-instruction {
+            font-size: 1.8rem; font-weight: 700; color: #fff; letter-spacing: 0.1em;
+            text-align: center; width: 100%; text-shadow: 0 0 25px rgba(255,90,101,0.9);
+            line-height: 1.2; padding: 4px 0;
+        }
+        .info-row {
+            display: flex; justify-content: space-between; width: 100%; max-width: 620px;
+            gap: 10px; margin: 2px 0;
+        }
+        .info-item {
+            background: rgba(22,10,14,0.6); backdrop-filter: blur(10px);
+            padding: 8px 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.12);
+            font-family: 'Fredoka One', cursive; display: flex; align-items: center; gap: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); font-size: 1rem;
+        }
+        .info-item .emoji-big { font-size: 1.4rem; }
+        .info-item .value { font-weight: 700; color: #fff; }
+        .grid-frame {
+            background: rgba(22,10,14,0.55); backdrop-filter: blur(18px);
+            border-radius: 28px; padding: 14px; border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6); width: 100%; max-width: 620px;
+        }
+        .card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%; }
+        .round-tracker { display: flex; justify-content: space-between; width: 100%; max-width: 620px; margin: 8px auto 0; gap: 10px; }
+        .tracker-dot { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.2); transition: 0.3s; }
+        .tracker-dot.active-red { background: #c73a46; border-color: #fff; box-shadow: 0 0 15px #c73a46; }
+        .tracker-dot.active-blue { background: #5a9e44; border-color: #fff; box-shadow: 0 0 15px #5a9e44; }
+        .tracker-dot.active-gold { background: #c49a5c; border-color: #fff; box-shadow: 0 0 15px #c49a5c; }
+        .tracker-dot.neutral { background: rgba(255,255,255,0.3); border-color: #fff; }
+        .tracker-dot.current { border-color: rgba(255,255,255,0.8); box-shadow: 0 0 22px rgba(255,255,255,0.5); animation: dotPulse 1.2s infinite; }
+        @keyframes dotPulse { 0%,100%{ transform:scale(1.1); } 50%{ transform:scale(1.25); } }
+
+        .match-card { aspect-ratio:1/1; perspective:800px; cursor:pointer; }
+        .card-inner { position:relative; width:100%; height:100%; transition:0.5s cubic-bezier(0.34,1.3,0.64,1); transform-style:preserve-3d; border-radius:16px; box-shadow:0 8px 22px rgba(0,0,0,0.6); }
+        .match-card.flipped .card-inner { transform:rotateY(180deg); }
+        .card-front, .card-back { position:absolute; width:100%; height:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:16px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+        .card-back { background:rgba(22,10,14,0.7); border:1px solid rgba(255,255,255,0.15); }
+        .card-back::after { content:'🍎'; font-size:3.4rem; text-shadow:0 0 25px rgba(199,58,70,0.8); }
+        .card-front { background:rgba(0,0,0,0.8); transform:rotateY(180deg); border:1px solid rgba(255,255,255,0.2); padding:8px; }
+        .card-front img { max-width:85%; max-height:85%; object-fit:contain; }
+        .win-message {
+            position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(0);
+            font-size:3rem; font-weight:700; color:#fff; pointer-events:none; z-index:30;
+            opacity:0; text-shadow:0 0 40px rgba(0,0,0,0.9);
+        }
+        .win-message.show { animation:popIn 0.7s cubic-bezier(0.34,1.3,0.64,1) forwards; }
+        @keyframes popIn { 0%{ transform:translate(-50%,-50%) scale(0) rotate(-10deg); opacity:0; } 100%{ transform:translate(-50%,-50%) scale(1) rotate(0); opacity:1; } }
+
+        .btn-back { font-family:'Fredoka One',cursive; padding:10px 28px; font-size:0.9rem; font-weight:600; text-transform:uppercase; border-radius:30px; cursor:pointer; backdrop-filter:blur(10px); background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.75); margin-top:6px; }
+        .btn-back:hover { background:rgba(255,255,255,0.12); color:#fff; }
+
+        @media (max-width: 1000px) {
+            .cards-stage { flex-direction: column; height: auto; gap: 1.5rem; }
+            .card-link { max-width: 100%; min-width: unset; }
+            .hub-logo { width: 120px; height: 120px; }
+            .hub-title { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer bg-base"></div>
+    <div class="bg-layer bg-texture"></div>
+    <div class="bg-layer bg-vignette"></div>
+    <div class="ambient-orbs">
+        <div class="orb orb-red"></div>
+        <div class="orb orb-green"></div>
+        <div class="orb orb-gold"></div>
+    </div>
+    <canvas id="petalCanvas"></canvas>
+
+    <!-- HUB SCREEN -->
+    <div id="hubScreen" class="screen active">
+        <div class="hub-wrapper">
+            <img class="hub-logo" src="https://i.postimg.cc/3xByZMxY/gato1.png" alt="Logo" loading="eager" fetchpriority="high">
+            <div class="title-container">
+                <h2 class="hub-title">🍎🐱 <span class="red-accent">APPLE</span> <span class="green-accent">CAT</span></h2>
+                <div class="ca-line" id="caLine" title="Click to copy contract address">
+                    <span class="ca-prefix">CA:</span>
+                    <span class="ca-text">66R44YgXe6ZbxRmDiBqkQ5t6yHu72isuE8BbS6u684fu</span>
+                    <span class="copy-icon" id="copyIcon">📋</span>
+                    <span class="copy-feedback" id="copyFeedback">✅ Copied!</span>
+                </div>
+            </div>
+            <div class="cards-stage">
+                <!-- Card 1: Game -->
+                <div class="card-link" id="gameCard">
+                    <div class="card">
+                        <div class="card-graphic-wrap">
+                            <img src="https://i.postimg.cc/wxbsSk6q/Chat-GPT-Image-13-jul-2026-06-38-35-p-m-(1).png" alt="Game Logo" loading="lazy">
+                            <div class="card-graphic-leaf cg1"></div>
+                            <div class="card-graphic-leaf cg2"></div>
+                        </div>
+                        <h3 class="card-title">APPLE CAT RAID</h3>
+                        <p class="card-desc">MATCH 3 OF THE SAME</p>
+                        <button class="card-btn play-btn" id="playBtn">▶ Play Now</button>
+                    </div>
+                </div>
+
+                <!-- Card 2: Live Token Stats -->
+                <div class="card-link" id="statsCard">
+                    <div class="card">
+                        <h3 class="card-title">🍏 TOKEN STATS</h3>
+                        <div class="stats-vertical">
+                            <div class="stat-row">
+                                <span class="stat-label">Price</span>
+                                <span class="stat-value" id="priceVal">$--</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">24h Change</span>
+                                <span class="stat-value stat-change" id="changeVal">--</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Volume 24h</span>
+                                <span class="stat-value" id="volumeVal">--</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Liquidity</span>
+                                <span class="stat-value" id="liquidityVal">--</span>
+                            </div>
+                        </div>
+                        <div class="mcap-bar-wrap">
+                            <div class="mcap-bar-label">
+                                <span>MCAP</span>
+                                <span id="mcapText">$0</span>
+                            </div>
+                            <div class="mcap-bar">
+                                <div class="mcap-fill" id="mcapFill" style="width:0%"></div>
+                            </div>
+                            <div class="mcap-bar-label" style="justify-content: flex-end; font-size:0.7rem;">
+                                <span>Goal: $100k</span>
+                            </div>
+                        </div>
+                        <a class="card-btn chart-btn" href="https://dexscreener.com/solana/5ahH4QUNr3d6YmqoKnuJYqKbATAHDBaYRSk8Fa5f8sdY" target="_blank" rel="noopener">📈 DexScreener</a>
+                    </div>
+                </div>
+
+                <!-- Card 3: GIFs -->
+                <div class="card-link" id="gifCard">
+                    <div class="card">
+                        <div class="card-graphic-wrap">
+                            <img src="https://i.postimg.cc/sfk3Qnyp/ezgif-com-gif-maker-(10).gif" alt="GIF" loading="lazy">
+                            <div class="card-graphic-leaf cg1"></div>
+                            <div class="card-graphic-leaf cg2"></div>
+                        </div>
+                        <h3 class="card-title">🎞️ GIFs</h3>
+                        <p class="card-desc">Download & share the hype!</p>
+                        <button class="card-btn download-btn" id="downloadGifBtn">⬇ Download GIF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="gameScreen" class="screen">
+        <div class="game-wrapper">
+            <div class="game-header">
+                <img class="game-logo-img" src="https://i.postimg.cc/RCJx1cZ4/Chat-GPT-Image-13-jul-2026-19-03-13-(1).png" alt="Banner" loading="eager">
+                <p class="match-instruction">MATCH 3 OF THE SAME</p>
+            </div>
+            <div class="info-row">
+                <div class="info-item"><span class="emoji-big">🍎</span><span class="value" id="roundDisplay">1 / 10</span></div>
+                <div class="info-item"><span class="emoji-big">👑</span><span class="value" id="topScorerDisplay">---</span></div>
+                <div class="info-item"><span class="emoji-big">⭐</span><span class="value" id="scoreDisplay">0</span></div>
+            </div>
+            <div class="grid-frame">
+                <div class="card-grid" id="cardGrid"></div>
+                <div class="win-message" id="winMessage"></div>
+            </div>
+            <div class="round-tracker" id="roundTracker"></div>
+            <button class="btn-back" id="backToHubBtn">← Back to Hub</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // Petal canvas
+            const petalCanvas = document.getElementById('petalCanvas');
+            const pCtx = petalCanvas.getContext('2d');
+            let pW, pH, petals = [];
+            function resizePetal() { pW=petalCanvas.width=innerWidth; pH=petalCanvas.height=innerHeight; }
+            function initPetals() {
+                petals=[];
+                for(let i=0;i<65;i++) petals.push({
+                    x:Math.random()*pW, y:Math.random()*pH, r:Math.random()*2.4+0.7,
+                    speed:Math.random()*1+0.4, wind:(Math.random()-0.5)*1.5,
+                    windSpeed:Math.random()*0.01+0.003, windPhase:Math.random()*Math.PI*2,
+                    opacity:Math.random()*0.4+0.3, hue:Math.random()<0.5?'rgba(199,58,70,':'rgba(250,246,242,',
+                });
+            }
+            function drawPetals() {
+                pCtx.clearRect(0,0,pW,pH);
+                petals.forEach(p=>{
+                    p.y+=p.speed; p.windPhase+=p.windSpeed; p.x+=Math.sin(p.windPhase)*p.wind*5;
+                    if(p.y>pH+15||p.x<-15||p.x>pW+15){p.y=-15;p.x=Math.random()*pW;}
+                    pCtx.globalAlpha=p.opacity; pCtx.beginPath();
+                    pCtx.arc(p.x,p.y,p.r,0,Math.PI*2); pCtx.fillStyle=p.hue+(p.opacity+0.3)+')';
+                    pCtx.shadowColor='rgba(255,255,255,0.3)'; pCtx.shadowBlur=4; pCtx.fill();
+                });
+                pCtx.globalAlpha=1; pCtx.shadowBlur=0; requestAnimationFrame(drawPetals);
+            }
+            window.addEventListener('resize',()=>{resizePetal();initPetals();});
+            resizePetal();initPetals();drawPetals();
+
+            // Copy CA
+            const caLine = document.getElementById('caLine');
+            const copyIcon = document.getElementById('copyIcon');
+            const copyFeedback = document.getElementById('copyFeedback');
+            const caText = '66R44YgXe6ZbxRmDiBqkQ5t6yHu72isuE8BbS6u684fu';
+
+            caLine.addEventListener('click', () => {
+                navigator.clipboard.writeText(caText).then(() => {
+                    copyIcon.style.display = 'none';
+                    copyFeedback.style.display = 'inline';
+                    setTimeout(() => {
+                        copyIcon.style.display = 'inline';
+                        copyFeedback.style.display = 'none';
+                    }, 1500);
+                });
+            });
+
+            // Live stats from the given pair ID
+            const PAIR_ID = '5ahH4QUNr3d6YmqoKnuJYqKbATAHDBaYRSk8Fa5f8sdY';
+            const API_URL = `https://api.dexscreener.com/latest/dex/pairs/solana/${PAIR_ID}`;
+            const MCAP_GOAL = 100000;
+
+            async function fetchStats() {
+                try {
+                    const res = await fetch(API_URL);
+                    const data = await res.json();
+                    if (data && data.pair) {
+                        const pair = data.pair;
+                        const price = parseFloat(pair.priceUsd) || 0;
+                        const change = parseFloat(pair.priceChange24h) || 0;
+                        const volume = parseFloat(pair.volume24h) || 0;
+                        const liquidity = parseFloat(pair.liquidityUsd) || 0;
+                        const mcap = parseFloat(pair.marketCapUsd) || 0;
+
+                        document.getElementById('priceVal').textContent = '$' + price.toFixed(price < 0.01 ? 6 : 4);
+                        const changeEl = document.getElementById('changeVal');
+                        changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
+                        changeEl.className = 'stat-value stat-change ' + (change >= 0 ? 'positive' : 'negative');
+                        document.getElementById('volumeVal').textContent = '$' + formatNumber(volume);
+                        document.getElementById('liquidityVal').textContent = '$' + formatNumber(liquidity);
+                        document.getElementById('mcapText').textContent = '$' + formatNumber(mcap);
+
+                        const percent = Math.min((mcap / MCAP_GOAL) * 100, 100);
+                        document.getElementById('mcapFill').style.width = percent + '%';
+                    }
+                } catch (e) {
+                    console.error('Stats fetch error:', e);
+                }
+            }
+
+            function formatNumber(num) {
+                if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+                if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+                return num.toFixed(2);
+            }
+            fetchStats();
+            setInterval(fetchStats, 8000);
+
+            // Direct GIF download
+            document.getElementById('downloadGifBtn').addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.href = 'https://i.postimg.cc/sfk3Qnyp/ezgif-com-gif-maker-(10).gif';
+                link.download = 'apple-cat-raid.gif';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+
+            // Game navigation
+            const hubScreen = document.getElementById('hubScreen');
+            const gameScreen = document.getElementById('gameScreen');
+            document.getElementById('playBtn').addEventListener('click', (e) => {
+                e.preventDefault(); hubScreen.classList.remove('active'); gameScreen.classList.add('active'); initGame();
+            });
+            document.getElementById('backToHubBtn').addEventListener('click', () => {
+                gameScreen.classList.remove('active'); hubScreen.classList.add('active');
+            });
+
+            // Game logic with new images
+            const IMAGES = {
+                gold: 'https://i.postimg.cc/crXr135V/golden3.png',
+                green: 'https://i.postimg.cc/dLqhK64s/good1.png',
+                red: 'https://i.postimg.cc/mtbPGj8b/rotten2.png'
+            };
+            const POINTS = { gold: 1250, green: 750, red: 450 };
+            const TYPE_COLOR = { gold: 'gold', green: 'blue', red: 'red' };
+            const TOTAL_ROUNDS = 10;
+            let grid, round, totalScore, roundActive, gameOver, roundResults, revealedCount, isProcessing, goldStreak;
+            const cardGrid = document.getElementById('cardGrid'),
+                roundDisplay = document.getElementById('roundDisplay'),
+                scoreDisplay = document.getElementById('scoreDisplay'),
+                topScorerDisplay = document.getElementById('topScorerDisplay'),
+                roundTracker = document.getElementById('roundTracker'),
+                winMessage = document.getElementById('winMessage');
+
+            function initGrid() {
+                let t = [];
+                for (let i = 0; i < 4; i++) t.push('gold', 'green', 'red');
+                for (let i = t.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [t[i], t[j]] = [t[j], t[i]]; }
+                grid = t.map(ty => ({ type: ty, revealed: false }));
+                revealedCount = { gold: 0, green: 0, red: 0 };
+                roundActive = true; isProcessing = false;
+            }
+            function renderGrid() {
+                cardGrid.innerHTML = '';
+                grid.forEach((it, idx) => {
+                    const c = document.createElement('div');
+                    c.className = 'match-card'; c.dataset.index = idx; c.dataset.type = it.type;
+                    const inner = document.createElement('div'); inner.className = 'card-inner';
+                    const front = document.createElement('div'); front.className = 'card-front';
+                    const img = document.createElement('img'); img.src = IMAGES[it.type]; front.appendChild(img);
+                    const back = document.createElement('div'); back.className = 'card-back';
+                    inner.appendChild(front); inner.appendChild(back); c.appendChild(inner);
+                    if (it.revealed) { c.classList.add('flipped'); c.classList.add(TYPE_COLOR[it.type]); }
+                    c.addEventListener('click', () => handleCardClick(idx));
+                    cardGrid.appendChild(c);
+                });
+            }
+            function handleCardClick(idx) {
+                if (gameOver || !roundActive || isProcessing) return;
+                const it = grid[idx]; if (it.revealed) return;
+                it.revealed = true; revealedCount[it.type]++;
+                const el = cardGrid.children[idx]; el.classList.add('flipped'); el.classList.add(TYPE_COLOR[it.type]);
+                if (revealedCount[it.type] === 3) {
+                    isProcessing = true; roundActive = false;
+                    let pts = POINTS[it.type], bonus = 0;
+                    if (it.type === 'gold') { goldStreak++; if (goldStreak >= 2) { bonus = (goldStreak - 1) * 250; pts += bonus; } }
+                    else goldStreak = 0;
+                    totalScore += pts; updateHUD();
+                    roundResults[round - 1] = it.type; updateTracker();
+                    grid.forEach((g, i) => { if (g.type === it.type && g.revealed) { const e = cardGrid.children[i]; e.classList.add('glow'); e.classList.add(TYPE_COLOR[it.type]); } });
+                    winMessage.textContent = `+${pts}${bonus > 0 ? ' 🔥+' + bonus : ''}`;
+                    winMessage.className = `win-message show ${TYPE_COLOR[it.type]}`;
+                    setTimeout(() => {
+                        winMessage.classList.remove('show', 'red', 'blue', 'gold');
+                        document.querySelectorAll('.match-card.glow').forEach(e => e.classList.remove('glow', 'red', 'blue', 'gold'));
+                        nextRound();
+                    }, 1500);
+                } else if (grid.every(g => g.revealed)) {
+                    isProcessing = true; roundActive = false; goldStreak = 0;
+                    roundResults[round - 1] = null; updateTracker();
+                    winMessage.textContent = '🍃 No match'; winMessage.className = 'win-message show blue';
+                    setTimeout(() => { winMessage.classList.remove('show', 'blue'); nextRound(); }, 900);
+                }
+                updateHUD();
+            }
+            function nextRound() { round++; if (round > TOTAL_ROUNDS) { endGame(); return; } initGrid(); renderGrid(); updateHUD(); updateTracker(); isProcessing = false; }
+            function endGame() {
+                gameOver = true; roundActive = false;
+                winMessage.textContent = `🏆 ${totalScore.toLocaleString()} pts!`; winMessage.className = 'win-message show gold';
+                setTimeout(() => {
+                    winMessage.classList.remove('show', 'gold');
+                    round = 1; totalScore = 0; goldStreak = 0; roundResults = []; gameOver = false;
+                    initGrid(); renderGrid(); updateHUD(); updateTracker();
+                }, 1700);
+            }
+            function updateHUD() {
+                roundDisplay.textContent = `${Math.min(round, TOTAL_ROUNDS)} / ${TOTAL_ROUNDS}`;
+                scoreDisplay.textContent = totalScore;
+                topScorerDisplay.textContent = '---';
+            }
+            function updateTracker() {
+                roundTracker.innerHTML = '';
+                for (let i = 0; i < TOTAL_ROUNDS; i++) {
+                    const d = document.createElement('span'); d.className = 'tracker-dot';
+                    if (i < roundResults.length) {
+                        const r = roundResults[i];
+                        if (r === 'gold') d.classList.add('active-gold');
+                        else if (r === 'green') d.classList.add('active-blue');
+                        else if (r === 'red') d.classList.add('active-red');
+                        else d.classList.add('neutral');
+                    }
+                    if (i === round - 1 && !gameOver) d.classList.add('current');
+                    roundTracker.appendChild(d);
+                }
+            }
+            function initGame() { round = 1; totalScore = 0; gameOver = false; goldStreak = 0; roundResults = []; initGrid(); renderGrid(); updateHUD(); updateTracker(); }
+        })();
+    </script>
+</body>
+</html>
