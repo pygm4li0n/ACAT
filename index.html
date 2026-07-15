@@ -25,6 +25,7 @@
             --radius-xl: 28px;
             --transition-bounce: 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
             --grid-max-w: min(520px, 86vmin);
+            --chat-radius: 18px;
         }
 
         * {
@@ -234,6 +235,7 @@
             display: none;
         }
 
+        /* ─── CARDS STAGE ─── */
         .cards-stage {
             display: flex;
             flex-direction: row;
@@ -245,7 +247,9 @@
             flex: 1;
             min-height: 0;
             padding: 0 0.5rem;
+            flex-wrap: wrap;
         }
+
         .card-link {
             text-decoration: none;
             color: inherit;
@@ -278,6 +282,7 @@
             position: relative;
             overflow: hidden;
             transition: all var(--transition-bounce);
+            flex: 1;
         }
         .card:hover {
             box-shadow: var(--shadow-front);
@@ -390,6 +395,50 @@
             position: relative;
         }
 
+        .card-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.4rem;
+            border-radius: 36px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.02em;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+            z-index: 2;
+            position: relative;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+        }
+        .play-btn {
+            background: var(--apple-red-muted);
+            color: #fff;
+            box-shadow: 0 6px 22px rgba(184, 48, 60, 0.45);
+        }
+        .play-btn:hover {
+            background: var(--apple-red-soft);
+            transform: translateY(-2px);
+        }
+        .download-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+        }
+        .download-btn:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+        .chart-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+        }
+        .chart-btn:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        /* ─── STATS CARD ─── */
         #statsCard .card {
             justify-content: flex-start;
         }
@@ -520,50 +569,304 @@
             min-width: 2%;
         }
 
-        .card-btn {
-            display: inline-flex;
+        /* ─── CHAT CARD (now a regular card) ─── */
+        .chat-card-link .card {
+            padding: 0.8rem 0.8rem 0.6rem;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            text-align: left;
+        }
+
+        .chat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 0.2rem 0.4rem 0.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+        .chat-card-header .chat-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
             align-items: center;
             gap: 0.4rem;
-            padding: 0.6rem 1.4rem;
-            border-radius: 36px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            letter-spacing: 0.02em;
-            transition: 0.3s;
-            border: none;
-            cursor: pointer;
-            z-index: 2;
-            position: relative;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-            text-decoration: none;
         }
-        .play-btn {
+        .chat-card-header .chat-title .emoji {
+            font-size: 1.1rem;
+        }
+        .chat-user-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.06);
+            padding: 0.15rem 0.7rem 0.15rem 0.5rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+        }
+        .chat-user-badge .uname {
+            font-weight: 600;
+            color: #fff;
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .chat-user-badge .change-name-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            font-size: 0.7rem;
+            padding: 0 2px;
+            transition: 0.2s;
+        }
+        .chat-user-badge .change-name-btn:hover {
+            color: #fff;
+        }
+        .chat-status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 0.1rem 0.5rem 0.1rem 0.35rem;
+            border-radius: 14px;
+            flex-shrink: 0;
+        }
+        .chat-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ffc107;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .chat-status-dot.connected {
+            background: #4ade80;
+        }
+        .chat-status-dot.disconnected {
+            background: #ef4444;
+        }
+
+        .chat-messages-wrap {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.3rem 0.2rem 0.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            min-height: 0;
+            max-height: 220px;
+            scroll-behavior: smooth;
+        }
+        .chat-messages-wrap::-webkit-scrollbar {
+            width: 3px;
+        }
+        .chat-messages-wrap::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+        }
+        .chat-messages-wrap::-webkit-scrollbar-thumb {
+            background: var(--apple-red-muted);
+            border-radius: 10px;
+        }
+
+        .chat-msg {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.25rem 0.6rem 0.25rem 0.5rem;
+            border-radius: 10px;
+            max-width: 92%;
+            align-self: flex-start;
+            border-left: 2px solid var(--apple-red-soft);
+            animation: msgFade 0.25s ease;
+            flex-shrink: 0;
+        }
+        .chat-msg .msg-user {
+            font-weight: 700;
+            color: var(--apple-red-soft);
+            font-size: 0.65rem;
+            letter-spacing: 0.02em;
+        }
+        .chat-msg .msg-text {
+            font-size: 0.8rem;
+            color: #f0e8e4;
+            word-break: break-word;
+            line-height: 1.25;
+        }
+        .chat-msg.self {
+            align-self: flex-end;
+            border-left-color: var(--leaf-green-soft);
+            background: rgba(90, 158, 68, 0.12);
+        }
+        .chat-msg.self .msg-user {
+            color: var(--leaf-green-soft);
+        }
+        .chat-empty {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            padding: 0.8rem 0;
+            font-style: italic;
+            opacity: 0.6;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 0.4rem;
+            padding: 0.4rem 0 0.1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+            align-items: center;
+        }
+        .chat-input-row input {
+            flex: 1;
+            padding: 0.4rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            color: #fff;
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.75rem;
+            outline: none;
+            transition: 0.3s;
+            min-width: 0;
+        }
+        .chat-input-row input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+        .chat-input-row input:focus {
+            border-color: var(--apple-red-soft);
+            box-shadow: 0 0 14px rgba(199, 58, 70, 0.2);
+        }
+        .chat-input-row .chat-send-btn {
             background: var(--apple-red-muted);
             color: #fff;
-            box-shadow: 0 6px 22px rgba(184, 48, 60, 0.45);
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Fredoka One', cursive;
+            flex-shrink: 0;
+            letter-spacing: 0.03em;
         }
-        .play-btn:hover {
+        .chat-input-row .chat-send-btn:hover {
+            background: var(--apple-red-soft);
+            transform: scale(1.03);
+        }
+        .chat-input-row .chat-send-btn:disabled {
+            background: rgba(255, 255, 255, 0.12);
+            cursor: not-allowed;
+            transform: none;
+        }
+        .chat-error-banner {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            padding: 0.15rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.6rem;
+            display: none;
+            margin-top: 0.1rem;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            flex-shrink: 0;
+        }
+        .chat-error-banner.visible {
+            display: block;
+        }
+
+        /* ─── CHAT NAME OVERLAY ─── */
+        .chat-name-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 70;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            backdrop-filter: blur(6px);
+        }
+        .chat-name-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .chat-name-box {
+            background: rgba(18, 8, 11, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem 1.2rem;
+            border: 2px solid var(--apple-red-soft);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 60px rgba(199, 58, 70, 0.35);
+            text-align: center;
+            width: 90%;
+            max-width: 340px;
+        }
+        .chat-name-box h3 {
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 0.2rem;
+            text-shadow: 0 0 18px rgba(255, 255, 255, 0.4);
+        }
+        .chat-name-box .sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+            font-weight: 400;
+        }
+        .chat-name-box input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border-radius: 28px;
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.9rem;
+            text-align: center;
+            outline: none;
+            margin-bottom: 0.8rem;
+            transition: 0.3s;
+        }
+        .chat-name-box input:focus {
+            border-color: var(--apple-red-soft);
+            box-shadow: 0 0 20px rgba(199, 58, 70, 0.3);
+        }
+        .chat-name-box input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .chat-name-box .name-btn {
+            font-family: 'Fredoka One', cursive;
+            padding: 0.5rem 1.6rem;
+            border-radius: 28px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
+            background: var(--apple-red-muted);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(184, 48, 60, 0.4);
+            width: 100%;
+        }
+        .chat-name-box .name-btn:hover {
             background: var(--apple-red-soft);
             transform: translateY(-2px);
         }
-        .download-btn {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.22);
-        }
-        .download-btn:hover {
-            background: rgba(255, 255, 255, 0.14);
-        }
-        .chart-btn {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.22);
-        }
-        .chart-btn:hover {
-            background: rgba(255, 255, 255, 0.14);
-        }
 
-        /* ===== GAME SCREEN ===== */
+        /* ─── GAME SCREEN (unchanged) ─── */
         #gameScreen {
             justify-content: flex-start;
             align-items: center;
@@ -683,7 +986,6 @@
             align-content: center;
             justify-content: center;
         }
-
         .round-tracker {
             display: flex;
             justify-content: space-between;
@@ -735,7 +1037,6 @@
                 transform: scale(1.18);
             }
         }
-
         .match-card {
             aspect-ratio: 1 / 1;
             perspective: 800px;
@@ -805,7 +1106,6 @@
             max-height: 80%;
             object-fit: contain;
         }
-
         .win-message {
             position: absolute;
             top: 50%;
@@ -833,7 +1133,6 @@
             }
         }
 
-        /* ===== TOP 10 BUTTON ===== */
         .top10-toggle-btn {
             font-family: 'Fredoka One', cursive;
             padding: 6px 16px;
@@ -859,7 +1158,6 @@
             box-shadow: 0 0 24px rgba(199, 58, 70, 0.6);
         }
 
-        /* ===== LEADERBOARD PANEL (Apple Red Theme) ===== */
         .leaderboard-panel {
             width: 100%;
             max-width: var(--grid-max-w);
@@ -969,7 +1267,6 @@
             font-size: 0.8rem;
         }
 
-        /* ===== NAME INPUT MODAL ===== */
         .name-modal-overlay {
             position: fixed;
             inset: 0;
@@ -1087,7 +1384,7 @@
             color: #fff;
         }
 
-        /* ===== RESPONSIVE (same as before, but with leaderboard adjustments) ===== */
+        /* ─── RESPONSIVE ─── */
         @media (max-width: 900px) {
             #hubScreen {
                 overflow-y: auto;
@@ -1120,6 +1417,37 @@
                 max-width: 100%;
                 min-width: unset;
                 flex: none;
+            }
+            /* Chat card large on mobile */
+            .chat-card-link {
+                flex: none;
+                width: 100%;
+                max-width: 100%;
+                height: 55vh;               /* large, fills most of screen */
+                min-height: 320px;
+            }
+            .chat-card-link .card {
+                height: 100%;
+                min-height: 0;
+                max-height: none;
+                padding: 0.6rem 0.7rem 0.5rem;
+            }
+            .chat-messages-wrap {
+                flex: 1;
+                max-height: none;           /* fill remaining height */
+            }
+            /* Game card centered with 1:1 image */
+            .card-link#gameCard {
+                width: 80vw;
+                max-width: 420px;
+                align-self: center;
+                margin: 1.5rem 0;
+            }
+            .card-link#gameCard .card {
+                flex: 0 0 auto;
+            }
+            .card-link#gameCard .card-graphic-wrap {
+                aspect-ratio: 1/1;
             }
             .global-logo {
                 width: 56px;
@@ -1210,6 +1538,40 @@
                 max-width: 100%;
                 min-width: unset;
                 flex: none;
+            }
+            .chat-card-link {
+                height: 52vh;
+                min-height: 280px;
+            }
+            .chat-card-link .card {
+                padding: 0.5rem 0.5rem 0.4rem;
+            }
+            .chat-messages-wrap {
+                max-height: none;
+            }
+            .chat-msg .msg-text {
+                font-size: 0.7rem;
+            }
+            .chat-msg .msg-user {
+                font-size: 0.55rem;
+            }
+            .chat-input-row input {
+                font-size: 0.65rem;
+                padding: 0.3rem 0.5rem;
+            }
+            .chat-input-row .chat-send-btn {
+                font-size: 0.6rem;
+                padding: 0.3rem 0.7rem;
+            }
+            .chat-card-header .chat-title {
+                font-size: 0.8rem;
+            }
+            .chat-user-badge {
+                font-size: 0.6rem;
+                padding: 0.1rem 0.5rem 0.1rem 0.35rem;
+            }
+            .chat-user-badge .uname {
+                max-width: 50px;
             }
             .hub-title {
                 font-size: 1.4rem;
@@ -1392,6 +1754,14 @@
             .leaderboard-list {
                 max-height: 140px;
             }
+            /* mobile chat for short screens */
+            .chat-card-link {
+                height: 50vh;
+                min-height: 200px;
+            }
+            .chat-messages-wrap {
+                max-height: none;
+            }
         }
 
         @media (max-height: 500px) {
@@ -1465,6 +1835,175 @@
                 padding: 3px 10px;
                 font-size: 0.55rem;
             }
+            .chat-card-link {
+                height: 45vh;
+                min-height: 160px;
+            }
+            .chat-card-link .card {
+                padding: 0.3rem 0.4rem 0.3rem;
+            }
+            .chat-messages-wrap {
+                max-height: none;
+            }
+            .chat-msg {
+                padding: 0.15rem 0.4rem;
+            }
+            .chat-msg .msg-text {
+                font-size: 0.6rem;
+            }
+            .chat-msg .msg-user {
+                font-size: 0.5rem;
+            }
+            .chat-input-row input {
+                font-size: 0.55rem;
+                padding: 0.2rem 0.4rem;
+            }
+            .chat-input-row .chat-send-btn {
+                font-size: 0.5rem;
+                padding: 0.2rem 0.5rem;
+            }
+            .chat-card-header .chat-title {
+                font-size: 0.65rem;
+            }
+            .chat-user-badge {
+                font-size: 0.5rem;
+                padding: 0.05rem 0.35rem;
+            }
+            .chat-user-badge .uname {
+                max-width: 40px;
+            }
+        }
+
+        /* ─── DESKTOP: Three equal columns (chat, game, stats) ─── */
+        @media (min-width: 901px) {
+            .cards-stage {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.5rem;
+                align-items: stretch;
+                flex: 1;
+                min-height: 0;
+                padding: 0 0.5rem;
+            }
+            .card-link {
+                max-width: 100%;
+                min-width: unset;
+                flex: none;
+            }
+            /* Chat stretches full height */
+            .chat-card-link .card {
+                min-height: 0;
+                max-height: none;
+                height: 100%;
+            }
+            .chat-messages-wrap {
+                flex: 1;
+                max-height: none;
+            }
+        }
+
+        @media (min-width: 901px) and (max-height: 700px) {
+            .chat-card-link .card {
+                min-height: 0;
+                max-height: none;
+                height: 100%;
+            }
+            .chat-messages-wrap {
+                max-height: none;
+                flex: 1;
+            }
+        }
+
+        @media (min-width: 901px) and (max-height: 500px) {
+            .chat-card-link .card {
+                min-height: 0;
+                max-height: none;
+                height: 100%;
+                padding: 0.4rem 0.6rem 0.3rem;
+            }
+            .chat-messages-wrap {
+                max-height: none;
+                flex: 1;
+            }
+            .chat-msg .msg-text {
+                font-size: 0.7rem;
+            }
+            .chat-msg .msg-user {
+                font-size: 0.55rem;
+            }
+            .chat-input-row input {
+                font-size: 0.6rem;
+                padding: 0.2rem 0.5rem;
+            }
+            .chat-input-row .chat-send-btn {
+                font-size: 0.55rem;
+                padding: 0.2rem 0.6rem;
+            }
+        }
+
+        @keyframes msgFade {
+            0% {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glow {
+            animation: glowPulse 0.6s ease 2;
+        }
+        @keyframes glowPulse {
+            0%,
+            100% {
+                box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 28px rgba(199, 58, 70, 0.7), 0 0 60px rgba(199, 58, 70, 0.3);
+            }
+        }
+        .glow.gold {
+            animation-name: glowGold;
+        }
+        @keyframes glowGold {
+            0%,
+            100% {
+                box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 28px rgba(196, 154, 92, 0.8), 0 0 60px rgba(196, 154, 92, 0.4);
+            }
+        }
+        .glow.green {
+            animation-name: glowGreen;
+        }
+        @keyframes glowGreen {
+            0%,
+            100% {
+                box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 28px rgba(90, 158, 68, 0.8), 0 0 60px rgba(90, 158, 68, 0.4);
+            }
+        }
+
+        /* ─── SPLIT STATS: Top stats, bottom empty ─── */
+        .stats-top {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            flex: 0 0 auto;
+        }
+        .stats-bottom-empty {
+            flex: 1;
+            width: 100%;
+            margin-top: 0.6rem;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.1);
+            min-height: 80px;
         }
     </style>
 </head>
@@ -1481,7 +2020,7 @@
 
     <img class="global-logo" src="https://i.postimg.cc/3xByZMxY/gato1.png" alt="Logo" loading="eager" fetchpriority="high" id="globalLogo" />
 
-    <!-- NAME INPUT MODAL -->
+    <!-- NAME INPUT MODAL (for game high score) -->
     <div class="name-modal-overlay" id="nameModalOverlay">
         <div class="name-modal">
             <h3>🏆 New High Score! 🏆</h3>
@@ -1494,6 +2033,17 @@
         </div>
     </div>
 
+    <!-- CHAT NAME OVERLAY -->
+    <div class="chat-name-overlay" id="chatNameOverlay">
+        <div class="chat-name-box">
+            <h3>💬 Join the Chat</h3>
+            <p class="sub">Enter a name to start talking</p>
+            <input type="text" id="chatNameInput" placeholder="Your name..." maxlength="24" autocomplete="off" />
+            <button class="name-btn" id="chatNameBtn">Join 💬</button>
+        </div>
+    </div>
+
+    <!-- HUB SCREEN -->
     <div id="hubScreen" class="screen active">
         <div class="hub-wrapper">
             <div class="title-container">
@@ -1506,6 +2056,33 @@
                 </div>
             </div>
             <div class="cards-stage">
+                <!-- CHAT CARD (first) -->
+                <div class="card-link chat-card-link" id="chatCard">
+                    <div class="card">
+                        <div class="chat-card-header">
+                            <span class="chat-title"><span class="emoji">💬</span> Live Chat</span>
+                            <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
+                                <div class="chat-user-badge" id="chatUserBadge" style="display:none;">
+                                    <span class="uname" id="chatDisplayName"></span>
+                                    <button class="change-name-btn" id="chatChangeNameBtn" title="Change name">✎</button>
+                                </div>
+                                <div class="chat-status-badge">
+                                    <span class="chat-status-dot" id="chatStatusDot"></span>
+                                    <span id="chatStatusText">Connecting…</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-messages-wrap" id="chatMessages">
+                            <div class="chat-empty" id="chatEmptyHint">No messages yet. Say hi 👋</div>
+                        </div>
+                        <div class="chat-error-banner" id="chatErrorBanner"></div>
+                        <div class="chat-input-row" id="chatInputArea" style="display:none;">
+                            <input type="text" id="chatMessageInput" placeholder="Type a message..." maxlength="500" autocomplete="off" />
+                            <button class="chat-send-btn" id="chatSendBtn">Send</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Game Card (second) -->
                 <div class="card-link" id="gameCard">
                     <div class="card">
                         <div class="card-graphic-wrap">
@@ -1518,51 +2095,44 @@
                         <button class="card-btn play-btn" id="playBtn">▶ Play Now</button>
                     </div>
                 </div>
+                <!-- Stats Card (third, split top/bottom) -->
                 <div class="card-link" id="statsCard">
                     <div class="card">
-                        <h3 class="card-title">🍏 TOKEN STATS</h3>
-                        <div class="stats-grid">
-                            <div class="stat-row accent-white">
-                                <span class="stat-label-wrap"><span class="stat-icon">🍎</span><span class="stat-label">Price</span></span>
-                                <span class="stat-value" id="priceVal">$--</span>
+                        <div class="stats-top">
+                            <h3 class="card-title">🍏 TOKEN STATS</h3>
+                            <div class="stats-grid">
+                                <div class="stat-row accent-white">
+                                    <span class="stat-label-wrap"><span class="stat-icon">🍎</span><span class="stat-label">Price</span></span>
+                                    <span class="stat-value" id="priceVal">$--</span>
+                                </div>
+                                <div class="stat-row accent-leaf">
+                                    <span class="stat-label-wrap"><span class="stat-icon">⚡</span><span class="stat-label">24h Change</span></span>
+                                    <span class="stat-value stat-change" id="changeVal">--</span>
+                                </div>
+                                <div class="stat-row accent-gold">
+                                    <span class="stat-label-wrap"><span class="stat-icon">🔥</span><span class="stat-label">Volume 24h</span></span>
+                                    <span class="stat-value" id="volumeVal">--</span>
+                                </div>
+                                <div class="stat-row accent-apple">
+                                    <span class="stat-label-wrap"><span class="stat-icon">💧</span><span class="stat-label">Liquidity</span></span>
+                                    <span class="stat-value" id="liquidityVal">--</span>
+                                </div>
                             </div>
-                            <div class="stat-row accent-leaf">
-                                <span class="stat-label-wrap"><span class="stat-icon">⚡</span><span class="stat-label">24h Change</span></span>
-                                <span class="stat-value stat-change" id="changeVal">--</span>
+                            <div class="mcap-bar-wrap">
+                                <div class="mcap-bar-label"><span>👑 MCAP</span><span id="mcapText">$0</span></div>
+                                <div class="mcap-bar"><div class="mcap-fill" id="mcapFill" style="width:0%"></div></div>
+                                <div class="mcap-bar-label" style="justify-content:flex-end;font-size:0.65rem;margin-top:0.25rem;margin-bottom:0;opacity:0.75;"><span>Goal: $100k</span></div>
                             </div>
-                            <div class="stat-row accent-gold">
-                                <span class="stat-label-wrap"><span class="stat-icon">🔥</span><span class="stat-label">Volume 24h</span></span>
-                                <span class="stat-value" id="volumeVal">--</span>
-                            </div>
-                            <div class="stat-row accent-apple">
-                                <span class="stat-label-wrap"><span class="stat-icon">💧</span><span class="stat-label">Liquidity</span></span>
-                                <span class="stat-value" id="liquidityVal">--</span>
-                            </div>
+                            <a class="card-btn chart-btn" href="https://dexscreener.com/solana/5ahH4QUNr3d6YmqoKnuJYqKbATAHDBaYRSk8Fa5f8sdY" target="_blank" rel="noopener">📈 DexScreener</a>
                         </div>
-                        <div class="mcap-bar-wrap">
-                            <div class="mcap-bar-label"><span>👑 MCAP</span><span id="mcapText">$0</span></div>
-                            <div class="mcap-bar"><div class="mcap-fill" id="mcapFill" style="width:0%"></div></div>
-                            <div class="mcap-bar-label" style="justify-content:flex-end;font-size:0.65rem;margin-top:0.25rem;margin-bottom:0;opacity:0.75;"><span>Goal: $100k</span></div>
-                        </div>
-                        <a class="card-btn chart-btn" href="https://dexscreener.com/solana/5ahH4QUNr3d6YmqoKnuJYqKbATAHDBaYRSk8Fa5f8sdY" target="_blank" rel="noopener">📈 DexScreener</a>
-                    </div>
-                </div>
-                <div class="card-link" id="gifCard">
-                    <div class="card">
-                        <div class="card-graphic-wrap">
-                            <img src="https://i.postimg.cc/sfk3Qnyp/ezgif-com-gif-maker-(10).gif" alt="GIF" loading="lazy" />
-                            <div class="card-graphic-leaf cg1"></div>
-                            <div class="card-graphic-leaf cg2"></div>
-                        </div>
-                        <h3 class="card-title">🎞️ GIFs</h3>
-                        <p class="card-desc">Download & share</p>
-                        <button class="card-btn download-btn" id="downloadGifBtn">⬇ Download GIF</button>
+                        <div class="stats-bottom-empty"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- GAME SCREEN -->
     <div id="gameScreen" class="screen">
         <div class="game-wrapper">
             <div class="game-header">
@@ -1594,17 +2164,23 @@
         </div>
     </div>
 
-    <!-- Supabase & Game Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- SUPABASE & SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
     <script>
         (function() {
-            // ─── SUPABASE CONFIG (your keys) ─────────────────
-            const SUPABASE_URL = 'https://faoziaawqxettcazbryq.supabase.co';
-            const SUPABASE_ANON_KEY = 'sb_publishable_kmZm7clazKO4SRyMC9oD6g_Zaz1AlDi';
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            const TOP_LIMIT = 10;
+            // ─── SUPABASE CONFIG ─────────────────────────────────────────
+            // Game / Leaderboard Supabase
+            const GAME_SUPABASE_URL = 'https://faoziaawqxettcazbryq.supabase.co';
+            const GAME_SUPABASE_ANON = 'sb_publishable_kmZm7clazKO4SRyMC9oD6g_Zaz1AlDi';
+            // Chat Supabase (separate project)
+            const CHAT_SUPABASE_URL = 'https://uixcwhznmoaqabhmrdhu.supabase.co';
+            const CHAT_SUPABASE_ANON = 'sb_publishable_c1LTwDYysAf8pWP-gkiPmQ_uIZivJD_';
 
-            // ─── PETALS (unchanged) ──────────────────────────
+            const supabaseGame = window.supabase.createClient(GAME_SUPABASE_URL, GAME_SUPABASE_ANON);
+            const supabaseChat = window.supabase.createClient(CHAT_SUPABASE_URL, CHAT_SUPABASE_ANON);
+
+            // ─── PETALS (unchanged) ──────────────────────────────────────
             const petalCanvas = document.getElementById('petalCanvas');
             const pCtx = petalCanvas.getContext('2d');
             let pW, pH, petals = [];
@@ -1660,7 +2236,7 @@
             initPetals();
             drawPetals();
 
-            // ─── DOM refs ────────────────────────────────────
+            // ─── DOM REFS ──────────────────────────────────────────────────
             const globalLogo = document.getElementById('globalLogo');
             const hubScreen = document.getElementById('hubScreen');
             const gameScreen = document.getElementById('gameScreen');
@@ -1691,7 +2267,7 @@
                 });
             });
 
-            // ─── TOKEN STATS (unchanged) ────────────────────
+            // ─── TOKEN STATS ──────────────────────────────────────────────
             const PAIR_ID = '5ahH4QUNr3d6YmqoKnuJYqKbATAHDBaYRSk8Fa5f8sdY';
             const API_URL = `https://api.dexscreener.com/latest/dex/pairs/solana/${PAIR_ID}`;
             const MCAP_GOAL = 100000;
@@ -1729,17 +2305,7 @@
             fetchStats();
             setInterval(fetchStats, 8000);
 
-            // ─── DOWNLOAD GIF (unchanged) ────────────────────
-            document.getElementById('downloadGifBtn').addEventListener('click', () => {
-                const link = document.createElement('a');
-                link.href = 'https://i.postimg.cc/sfk3Qnyp/ezgif-com-gif-maker-(10).gif';
-                link.download = 'apple-cat-raid.gif';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            });
-
-            // ─── SCREEN SWITCHING ────────────────────────────
+            // ─── SCREEN SWITCHING ──────────────────────────────────────────
             document.getElementById('playBtn').addEventListener('click', (e) => {
                 e.preventDefault();
                 hubScreen.classList.remove('active');
@@ -1760,7 +2326,7 @@
                 gameScreen.scrollTop = 0;
             });
 
-            // ─── SUPABASE LEADERBOARD ────────────────────────
+            // ─── LEADERBOARD (Game) ──────────────────────────────────────
             const leaderboardPanel = document.getElementById('leaderboardPanel');
             const leaderboardList = document.getElementById('leaderboardList');
             const top10ToggleBtn = document.getElementById('top10ToggleBtn');
@@ -1773,12 +2339,11 @@
             const skipScoreBtn = document.getElementById('skipScoreBtn');
 
             let leaderboardOpen = false;
-            let cachedTopScores = [];   // used to check eligibility quickly
+            let cachedTopScores = [];
             let pendingSaveScore = 0;
 
-            // fetch top scores from Supabase
-            async function fetchTopScores(limit = TOP_LIMIT) {
-                const { data, error } = await supabase
+            async function fetchTopScores(limit = 10) {
+                const { data, error } = await supabaseGame
                     .from('scores')
                     .select('*')
                     .order('score', { ascending: false })
@@ -1787,15 +2352,13 @@
                 return data || [];
             }
 
-            // insert a new score
             async function insertScore(name, score) {
-                const { error } = await supabase
+                const { error } = await supabaseGame
                     .from('scores')
                     .insert([{ name: name.trim().slice(0, 60) || 'Anonymous 🐱', score: Math.round(score) }]);
                 if (error) throw error;
             }
 
-            // render the leaderboard panel
             function renderLeaderboard(scores) {
                 leaderboardList.innerHTML = '';
                 if (!scores || scores.length === 0) {
@@ -1883,13 +2446,12 @@
                     openLeaderboard();
                 }
             }
-
             top10ToggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 toggleLeaderboard();
             });
 
-            // ─── NAME MODAL ──────────────────────────────────
+            // ─── NAME MODAL (Game) ──────────────────────────────────────
             function showNameModal(score) {
                 pendingSaveScore = score;
                 finalScoreDisplay.textContent = score.toLocaleString() + ' pts';
@@ -1945,24 +2507,22 @@
 
             saveScoreBtn.addEventListener('click', handleSaveScore);
             skipScoreBtn.addEventListener('click', handleSkipScore);
-
             playerNameInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') handleSaveScore();
             });
-
             nameModalOverlay.addEventListener('click', (e) => {
                 if (e.target === nameModalOverlay) handleSkipScore();
             });
 
-            // Real-time subscription to update leaderboard instantly
-            supabase
+            // Real-time subscription for leaderboard
+            supabaseGame
                 .channel('scores_channel')
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'scores' }, () => {
                     refreshLeaderboard();
                 })
                 .subscribe();
 
-            // ─── GAME LOGIC (unchanged) ──────────────────────
+            // ─── GAME LOGIC ──────────────────────────────────────────────
             const IMAGES = {
                 gold: 'https://i.postimg.cc/crXr135V/golden3.png',
                 green: 'https://i.postimg.cc/dLqhK64s/good1.png',
@@ -2032,7 +2592,8 @@
                 if (revealedCount[it.type] === 3) {
                     isProcessing = true;
                     roundActive = false;
-                    let pts = POINTS[it.type], bonus = 0;
+                    let pts = POINTS[it.type],
+                        bonus = 0;
                     if (it.type === 'gold') {
                         goldStreak++;
                         if (goldStreak >= 2) {
@@ -2055,7 +2616,8 @@
                     winMessage.className = `win-message show ${TYPE_COLOR[it.type]}`;
                     setTimeout(() => {
                         winMessage.classList.remove('show', 'red', 'green', 'gold');
-                        document.querySelectorAll('.match-card.glow').forEach(e => e.classList.remove('glow', 'red', 'green', 'gold'));
+                        document.querySelectorAll('.match-card.glow').forEach(e => e.classList.remove('glow', 'red',
+                            'green', 'gold'));
                         nextRound();
                     }, 1400);
                 } else if (grid.every(g => g.revealed)) {
@@ -2099,7 +2661,7 @@
                     try {
                         const topScores = await fetchTopScores();
                         cachedTopScores = topScores;
-                        const isHigh = topScores.length < TOP_LIMIT ||
+                        const isHigh = topScores.length < 10 ||
                             finalScore > (topScores[topScores.length - 1]?.score || 0);
                         if (isHigh) {
                             showNameModal(finalScore);
@@ -2147,10 +2709,212 @@
                 updateTracker();
                 gameScreen.scrollTop = 0;
                 hideNameModal();
-                refreshLeaderboard(); // initial fetch
+                refreshLeaderboard();
             }
 
-            // Initial fetch
+            // ─── CHAT SYSTEM ──────────────────────────────────────────────
+            const CHAT_STORAGE_KEY = 'chat_username_applecat';
+            let chatUsername = localStorage.getItem(CHAT_STORAGE_KEY) || '';
+
+            const chatMessages = document.getElementById('chatMessages');
+            const chatMessageInput = document.getElementById('chatMessageInput');
+            const chatSendBtn = document.getElementById('chatSendBtn');
+            const chatStatusDot = document.getElementById('chatStatusDot');
+            const chatStatusText = document.getElementById('chatStatusText');
+            const chatErrorBanner = document.getElementById('chatErrorBanner');
+            const chatInputArea = document.getElementById('chatInputArea');
+            const chatUserBadge = document.getElementById('chatUserBadge');
+            const chatDisplayName = document.getElementById('chatDisplayName');
+            const chatChangeNameBtn = document.getElementById('chatChangeNameBtn');
+            const chatNameOverlay = document.getElementById('chatNameOverlay');
+            const chatNameInput = document.getElementById('chatNameInput');
+            const chatNameBtn = document.getElementById('chatNameBtn');
+            const chatEmptyHint = document.getElementById('chatEmptyHint');
+
+            let chatChannel = null;
+
+            function chatSetStatus(state, text) {
+                chatStatusDot.className = 'chat-status-dot ' + (state || '');
+                chatStatusText.textContent = text;
+            }
+
+            function chatShowError(msg) {
+                chatErrorBanner.textContent = '⚠️ ' + msg;
+                chatErrorBanner.classList.add('visible');
+            }
+
+            function chatClearError() {
+                chatErrorBanner.classList.remove('visible');
+            }
+
+            function escapeHtml(text) {
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+                return String(text).replace(/[&<>"']/g, m => map[m]);
+            }
+
+            function chatAddMessage({ username: msgUser, message }) {
+                if (chatEmptyHint) chatEmptyHint.style.display = 'none';
+                const div = document.createElement('div');
+                div.className = 'chat-msg';
+                if (msgUser === chatUsername) div.classList.add('self');
+                div.innerHTML =
+                    `<div class="msg-user">${escapeHtml(msgUser)}</div><div class="msg-text">${escapeHtml(message)}</div>`;
+                chatMessages.appendChild(div);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                while (chatMessages.children.length > 100) {
+                    chatMessages.removeChild(chatMessages.firstChild);
+                }
+            }
+
+            function chatApplyUsername(name) {
+                chatUsername = name;
+                localStorage.setItem(CHAT_STORAGE_KEY, name);
+                chatDisplayName.textContent = name;
+                chatUserBadge.style.display = 'flex';
+                chatInputArea.style.display = 'flex';
+                chatNameOverlay.classList.remove('active');
+            }
+
+            async function chatLoadMessages() {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                try {
+                    chatSetStatus('', 'Connecting…');
+                    chatClearError();
+                    const response = await fetch(
+                        `${CHAT_SUPABASE_URL}/rest/v1/messages?select=*&order=created_at.asc&limit=50`, {
+                            headers: {
+                                'apikey': CHAT_SUPABASE_ANON,
+                                'Authorization': `Bearer ${CHAT_SUPABASE_ANON}`
+                            },
+                            signal: controller.signal
+                        }
+                    );
+                    clearTimeout(timeoutId);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+                    const data = await response.json();
+                    while (chatMessages.firstChild) chatMessages.removeChild(chatMessages.firstChild);
+                    if (data.length === 0) {
+                        const hint = document.createElement('div');
+                        hint.className = 'chat-empty';
+                        hint.id = 'chatEmptyHint';
+                        hint.textContent = 'No messages yet. Say hi 👋';
+                        chatMessages.appendChild(hint);
+                    } else {
+                        data.forEach(msg => chatAddMessage(msg));
+                    }
+                    chatSetStatus('connected', 'Live');
+                    return true;
+                } catch (err) {
+                    clearTimeout(timeoutId);
+                    chatShowError(err.name === 'AbortError' ? 'Request timed out.' : 'Failed to load: ' + err.message);
+                    chatSetStatus('disconnected', 'Error');
+                    return false;
+                }
+            }
+
+            async function chatSendMessage() {
+                const message = chatMessageInput.value.trim();
+                if (!message || !chatUsername) return;
+                chatSendBtn.disabled = true;
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                try {
+                    const response = await fetch(`${CHAT_SUPABASE_URL}/rest/v1/messages`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': CHAT_SUPABASE_ANON,
+                            'Authorization': `Bearer ${CHAT_SUPABASE_ANON}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify({ username: chatUsername, message }),
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+                    chatMessageInput.value = '';
+                    chatClearError();
+                } catch (err) {
+                    chatShowError(err.name === 'AbortError' ? 'Send timed out.' : 'Send failed: ' + err.message);
+                    chatSetStatus('disconnected', 'Error');
+                } finally {
+                    chatSendBtn.disabled = false;
+                    chatMessageInput.focus();
+                }
+            }
+
+            function chatSubscribe() {
+                if (chatChannel) {
+                    supabaseChat.removeChannel(chatChannel);
+                }
+                chatChannel = supabaseChat
+                    .channel('public:messages')
+                    .on(
+                        'postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' },
+                        (payload) => {
+                            chatAddMessage(payload.new);
+                            chatSetStatus('connected', 'Live');
+                            chatClearError();
+                        }
+                    )
+                    .subscribe((status) => {
+                        if (status === 'SUBSCRIBED') chatSetStatus('connected', 'Live');
+                        else if (status === 'CHANNEL_ERROR') {
+                            chatShowError('Realtime connection failed. Is the table in the publication?');
+                            chatSetStatus('disconnected', 'Realtime error');
+                        } else if (status === 'CLOSED') chatSetStatus('disconnected', 'Disconnected');
+                    });
+            }
+
+            chatSendBtn.addEventListener('click', chatSendMessage);
+            chatMessageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') chatSendMessage();
+            });
+
+            chatNameBtn.addEventListener('click', () => {
+                const newName = chatNameInput.value.trim();
+                if (!newName) return;
+                chatApplyUsername(newName);
+                if (!window._chatLoaded) {
+                    chatLoadMessages().then(() => { window._chatLoaded = true; });
+                    chatSubscribe();
+                }
+            });
+            chatNameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') chatNameBtn.click();
+            });
+
+            chatChangeNameBtn.addEventListener('click', () => {
+                localStorage.removeItem(CHAT_STORAGE_KEY);
+                chatUsername = '';
+                chatUserBadge.style.display = 'none';
+                chatInputArea.style.display = 'none';
+                chatNameOverlay.classList.add('active');
+                chatNameInput.value = '';
+                chatNameInput.focus();
+                while (chatMessages.firstChild) chatMessages.removeChild(chatMessages.firstChild);
+                const hint = document.createElement('div');
+                hint.className = 'chat-empty';
+                hint.id = 'chatEmptyHint';
+                hint.textContent = 'No messages yet. Say hi 👋';
+                chatMessages.appendChild(hint);
+                if (chatChannel) {
+                    supabaseChat.removeChannel(chatChannel);
+                    chatChannel = null;
+                }
+                chatSetStatus('', 'Disconnected');
+            });
+
+            if (chatUsername) {
+                chatApplyUsername(chatUsername);
+                chatLoadMessages().then(() => { window._chatLoaded = true; });
+                chatSubscribe();
+            } else {
+                chatNameOverlay.classList.add('active');
+                chatNameInput.focus();
+            }
+
             refreshLeaderboard();
         })();
     </script>
